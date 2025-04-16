@@ -1,0 +1,213 @@
+/* ============================
+   RESPONSIVE.CSS
+   Adaptações responsivas:
+   - Mobile-first como base
+   - Adaptações específicas por breakpoint
+   - Transformações de layout específicas
+============================ */
+
+/* Base (Mobile-first) - Aplicado por padrão */
+/* Nota: A maioria das definições mobile-first já estão em seus respectivos arquivos CSS */
+
+/* Tablet (768px e acima) */
+@media (min-width: 768px) {
+  /* Layout */
+  .container {
+    padding: 0 var(--space-l);
+  }
+  
+  /* Navegação */
+  .mobile-nav-toggle {
+    display: none;
+  }
+  
+  .main-nav {
+    transform: translateX(0);
+  }
+
+  /* Seções de conteúdo */
+  .section__title {
+    font-size: var(--font-size-xxl);
+  }
+  
+  .subsection-title {
+    font-size: var(--font-size-xl);
+  }
+  
+  /* Cards e Componentes */
+  .content-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-m);
+  }
+  
+  /* Tabelas */
+  .table-mobile-view {
+    display: none;
+  }
+  
+  .table-container {
+    display: block;
+  }
+  
+  /* Visualizações */
+  .chart-controls {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  /* Timeline */
+  .timeline-vertical-view {
+    display: none;
+  }
+  
+  .timeline-horizontal-view {
+    display: block;
+  }
+}
+
+/* Desktop (1024px e acima) */
+@media (min-width: 1024px) {
+  /* Layout geral */
+  .main-content {
+    margin-left: 240px;
+  }
+  
+  /* Grids mais complexos */
+  .content-card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--space-l);
+  }
+  
+  /* Navegação */
+  .sidebar-nav__text {
+    display: inline;
+  }
+  
+  /* Visualizações */
+  .visualization-container {
+    min-height: 350px;
+  }
+  
+  .chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  /* Comparação lado a lado */
+  .comparison-layout {
+    display: flex;
+    gap: var(--space-l);
+  }
+  
+  .comparison-layout > * {
+    flex: 1;
+  }
+  
+  /* Navegação entre seções no rodapé */
+  .section-navigation {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+/* Desktop large (1440px e acima) */
+@media (min-width: 1440px) {
+  /* Layout mais espaçoso */
+  .container {
+    max-width: 1320px;
+    margin: 0 auto;
+  }
+  
+  /* Grid mais rico */
+  .content-card-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  /* Visualizações maiores */
+  .visualization-container {
+    min-height: 450px;
+  }
+  
+  /* Layout específico para telas grandes */
+  .dashboard-grid {
+    grid-template-columns: 3fr 1fr;
+  }
+  
+  /* Navegação fixa sempre visível */
+  .main-nav {
+    width: 280px;
+  }
+  
+  .main-content {
+    margin-left: 280px;
+  }
+}
+
+/* Print styles - otimizados para impressão */
+@media print {
+  /* Esconder elementos não relevantes para impressão */
+  .main-nav,
+  .mobile-nav-toggle,
+  .section-navigation,
+  .timeline-controls,
+  .table-controls,
+  .chart-controls {
+    display: none !important;
+  }
+  
+  /* Garantir que todo conteúdo seja visível */
+  .content-section {
+    display: block !important;
+    page-break-after: always;
+  }
+  
+  /* Cores para impressão */
+  body {
+    font-size: 11pt;
+    color: #000;
+    background-color: #fff;
+  }
+  
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+  
+  /* Garantir que as tabelas caibam na página */
+  table {
+    font-size: 10pt;
+    max-width: 100% !important;
+  }
+  
+  /* Ajustar gráficos para impressão */
+  .chart-container {
+    page-break-inside: avoid;
+    max-width: 100% !important;
+    max-height: 400px !important;
+  }
+  
+  /* Remover efeitos visuais desnecessários */
+  .content-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  
+  /* Otimizar utilização de espaço */
+  .container {
+    max-width: 100%;
+    padding: 0;
+  }
+  
+  /* Forçar visualização de backgrounds e cores */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

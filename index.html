@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório Amica - Análise de Mercado e Estratégia</title>
+    <meta name="description" content="Análise estratégica do mercado brasileiro de semijoias para entrada da marca Amica">
+    
+    <!-- Base URL para GitHub Pages - será ignorada em servidores locais -->
+    <script>
+        // Detecta se estamos no GitHub Pages e configura a base href dinamicamente
+        if (window.location.hostname.includes('github.io')) {
+            const pathParts = window.location.pathname.split('/');
+            const repoName = pathParts[1]; // O primeiro segmento após a barra é o nome do repo
+            document.write(`<base href="/${repoName}/">`);
+            console.log(`Base href configurada para: /${repoName}/`);
+        }
+    </script>
+    
+    <!-- GitHub Pages - Melhorias de Compatibilidade -->
+    <script>
+        // Detecta se estamos no GitHub Pages e adiciona classe ao HTML
+        if (window.location.hostname.includes('github.io')) {
+            document.documentElement.classList.add('github-pages');
+            // Adiciona meta tag para desabilitar cache
+            const meta = document.createElement('meta');
+            meta.setAttribute('http-equiv', 'Cache-Control');
+            meta.setAttribute('content', 'no-cache, no-store, must-revalidate');
+            document.head.appendChild(meta);
+        }
+    </script>
+    
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/layout.css">
+    <link rel="stylesheet" href="assets/css/sections.css">
+    <link rel="stylesheet" href="assets/css/navigation.css">
+    <link rel="stylesheet" href="assets/css/tables.css">
+    <link rel="stylesheet" href="assets/css/charts.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <link rel="stylesheet" href="assets/css/timeline.css">
+    <link rel="stylesheet" href="assets/css/risk-matrix.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Aviso de protocolo File -->
+    <div class="file-protocol-warning">
+        Para melhor experiência, acesse este relatório através de um servidor HTTP local. Use <code>python -m http.server 8000</code> ou <code>npx serve</code> e acesse via http://localhost:8000.
+    </div>
+    
+    <div class="app-container">
+        <!-- Navegação -->
+        <nav class="main-nav">
+            <div class="sidebar__header">
+                <div class="sidebar__logo">
+                    <h1 class="nav-logo__text">Amica</h1>
+                </div>
+            </div>
+            <div class="nav-section">
+                <h2 class="nav-section__title">Relatório</h2>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-nav__item">
+                        <a href="#sumario-executivo" class="sidebar-nav__link">
+                            <span class="sidebar-nav__text">Sumário Executivo</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav__item">
+                        <a href="#analise-mercado" class="sidebar-nav__link active">
+                            <span class="sidebar-nav__text">Análise de Mercado</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav__item">
+                        <a href="#analise-concorrencia" class="sidebar-nav__link">
+                            <span class="sidebar-nav__text">Análise de Concorrência</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav__item">
+                        <a href="#publico-alvo" class="sidebar-nav__link">
+                            <span class="sidebar-nav__text">Público-Alvo</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav__item">
+                        <a href="#precificacao-custos" class="sidebar-nav__link">
+                            <span class="sidebar-nav__text">Precificação</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav__item">
+                        <a href="#marketplaces" class="sidebar-nav__link">
+                            <span class="sidebar-nav__text">Marketplaces</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav__item">
+                        <a href="#ecommerce-proprio" class="sidebar-nav__link">
+                            <span class="sidebar-nav__text">E-commerce Próprio</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav__item">
+                        <a href="#redes-sociais" class="sidebar-nav__link">
+                            <span class="sidebar-nav__text">Redes Sociais</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav__item">
+                        <a href="#fidelizacao-clientes" class="sidebar-nav__link">
+                            <span class="sidebar-nav__text">Fidelização de Clientes</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav__item">
+                        <a href="#plano-expansao" class="sidebar-nav__link">
+                            <span class="sidebar-nav__text">Plano de Expansão</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav__item">
+                        <a href="#analise-riscos" class="sidebar-nav__link">
+                            <span class="sidebar-nav__text">Análise de Riscos</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-nav__item">
+                        <a href="#conclusao-recomendacoes" class="sidebar-nav__link">
+                            <span class="sidebar-nav__text">Conclusão</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        
+        <!-- Conteúdo principal -->
+        <main class="main-content">
+            <!-- Cabeçalho do site -->
+            <div id="header-container"></div>
+            
+            <!-- Área de carregamento de conteúdo -->
+            <div id="content-loader">
+                <div class="loading-indicator">
+                    <div class="spinner"></div>
+                    <p>Carregando conteúdo...</p>
+                </div>
+                
+                <!-- Mensagem informativa para acessos via protocolo file:// -->
+                <div class="important-notice">
+                    <h4>Importante: Acesso Local Detectado</h4>
+                    <p>Este relatório está sendo acessado diretamente pelo sistema de arquivos, o que pode limitar algumas funcionalidades. Para uma experiência completa, recomendamos o uso de um servidor HTTP local:</p>
+                    <pre>
+# Python (Recomendado)
+python -m http.server 8000
+
+# OU Node.js
+npx serve
+
+# OU PHP
+php -S localhost:8000
+                    </pre>
+                    <p>Depois acesse: <strong>http://localhost:8000</strong> em seu navegador.</p>
+                </div>
+                
+                <!-- Placeholders para cada seção - conteúdo será carregado dos arquivos em content/ -->
+                <!-- Sumário Executivo -->
+                <section class="content-section" id="sumario-executivo" style="display: none;">
+                    <div class="section__header">
+                        <h1 class="section__title">Sumário Executivo</h1>
+                    </div>
+                    <div class="section-content-placeholder"></div>
+                </section>
+                
+                <!-- Análise de Mercado -->
+                <section class="content-section" id="analise-mercado">
+                    <div class="section__header">
+                        <h1 class="section__title">Análise do Mercado de Semijoias</h1>
+                    </div>
+                    <div class="section-content-placeholder"></div>
+                </section>
+                
+                <!-- Análise de Concorrência -->
+                <section class="content-section" id="analise-concorrencia" style="display: none;">
+                    <div class="section__header">
+                        <h1 class="section__title">Análise de Concorrência</h1>
+                    </div>
+                    <div class="section-content-placeholder"></div>
+                </section>
+                
+                <!-- Público-Alvo -->
+                <section class="content-section" id="publico-alvo" style="display: none;">
+                    <div class="section__header">
+                        <h1 class="section__title">Público-Alvo</h1>
+                    </div>
+                    <div class="section-content-placeholder"></div>
+                </section>
+                
+                <!-- Precificação e Custos -->
+                <section class="content-section" id="precificacao-custos" style="display: none;">
+                    <div class="section__header">
+                        <h1 class="section__title">Precificação e Custos</h1>
+                    </div>
+                    <div class="section-content-placeholder"></div>
+                </section>
+                
+                <!-- Marketplaces -->
+                <section class="content-section" id="marketplaces" style="display: none;">
+                    <div class="section__header">
+                        <h1 class="section__title">Marketplaces</h1>
+                    </div>
+                    <div class="section-content-placeholder"></div>
+                </section>
+                
+                <!-- E-commerce Próprio -->
+                <section class="content-section" id="ecommerce-proprio" style="display: none;">
+                    <div class="section__header">
+                        <h1 class="section__title">E-commerce Próprio</h1>
+                    </div>
+                    <div class="section-content-placeholder"></div>
+                </section>
+                
+                <!-- Redes Sociais -->
+                <section class="content-section" id="redes-sociais" style="display: none;">
+                    <div class="section__header">
+                        <h1 class="section__title">Redes Sociais</h1>
+                    </div>
+                    <div class="section-content-placeholder"></div>
+                </section>
+                
+                <!-- Fidelização de Clientes -->
+                <section class="content-section" id="fidelizacao-clientes" style="display: none;">
+                    <div class="section__header">
+                        <h1 class="section__title">Fidelização de Clientes</h1>
+                    </div>
+                    <div class="section-content-placeholder"></div>
+                </section>
+                
+                <!-- Plano de Expansão -->
+                <section class="content-section" id="plano-expansao" style="display: none;">
+                    <div class="section__header">
+                        <h1 class="section__title">Plano de Expansão</h1>
+                    </div>
+                    <div class="section-content-placeholder"></div>
+                </section>
+                
+                <!-- Análise de Riscos -->
+                <section class="content-section" id="analise-riscos" style="display: none;">
+                    <div class="section__header">
+                        <h1 class="section__title">Análise de Riscos</h1>
+                    </div>
+                    <div class="section-content-placeholder"></div>
+                </section>
+                
+                <!-- Conclusão e Recomendações -->
+                <section class="content-section" id="conclusao-recomendacoes" style="display: none;">
+                    <div class="section__header">
+                        <h1 class="section__title">Conclusão e Recomendações</h1>
+                    </div>
+                    <div class="section-content-placeholder"></div>
+                </section>
+            </div>
+            
+            <!-- Rodapé do site -->
+            <div id="footer-container"></div>
+        </main>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/navigation.js"></script>
+    <script src="assets/js/tab-navigation.js"></script>
+    <script src="assets/js/data-loader.js"></script>
+    <script src="assets/js/charts.js"></script>
+    <script src="assets/js/components-loader.js"></script>
+    <script src="assets/js/risk-matrix.js"></script>
+    
+    <!-- Script especial para compatibilidade com GitHub Pages -->
+    <script>
+        if (window.location.hostname.includes('github.io')) {
+            // Carregamos o script de compatibilidade apenas quando estamos no GitHub Pages
+            const script = document.createElement('script');
+            script.src = 'assets/js/github-compatibility.js';
+            document.body.appendChild(script);
+        }
+    </script>
+</body>
+</html>

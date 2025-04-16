@@ -1,0 +1,274 @@
+/* ============================
+   LAYOUT.CSS
+   Estruturas de layout:
+   - Grid system
+   - Containers
+   - Wrappers
+   - Layout structures
+============================ */
+
+/* Grid System */
+.grid {
+  display: grid;
+  gap: var(--space-m);
+}
+
+.grid-2 {
+  grid-template-columns: 1fr;
+}
+
+.grid-3 {
+  grid-template-columns: 1fr;
+}
+
+.grid-4 {
+  grid-template-columns: 1fr;
+}
+
+/* Container principal */
+.container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+.container-narrow {
+  max-width: 900px;
+}
+
+.container-wide {
+  max-width: 1400px;
+}
+
+/* Flexbox layouts */
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.items-end {
+  align-items: flex-end;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-start {
+  justify-content: flex-start;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.gap-xs {
+  gap: var(--space-xs);
+}
+
+.gap-s {
+  gap: var(--space-s);
+}
+
+.gap-m {
+  gap: var(--space-m);
+}
+
+.gap-l {
+  gap: var(--space-l);
+}
+
+/* Wrappers específicos */
+.content-wrapper {
+  padding: var(--space-l) 0;
+}
+
+.section-wrapper {
+  margin-bottom: var(--space-xl);
+}
+
+/* Layout da página principal */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-nav {
+  width: 240px;
+  background-color: var(--color-white);
+  border-right: var(--border-width-thin) solid var(--color-light-gray);
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  transition: transform var(--transition-normal);
+  z-index: var(--z-index-fixed);
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 240px;
+  padding: var(--space-l);
+}
+
+/* Layout responsivo */
+@media (min-width: 768px) {
+  .grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .grid-4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1440px) {
+  .grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Mobile navigation */
+@media (max-width: 767px) {
+  .main-nav {
+    transform: translateX(-100%);
+    width: 280px;
+  }
+  
+  .main-nav.is-active {
+    transform: translateX(0);
+  }
+  
+  .main-content {
+    margin-left: 0;
+    padding: var(--space-m);
+  }
+  
+  .app-container.nav-open .main-content {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+/* Estilos para o indicador de carregamento */
+.loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.loading-indicator .spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(var(--color-primary-rgb), 0.2);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-indicator p {
+  font-family: var(--font-secondary);
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+/* Estilos para mensagens de erro */
+.error-message {
+  background-color: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  color: #c0392b;
+  font-family: var(--font-secondary);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* Estilos para mensagens importantes (aviso quando usando file://) */
+.important-notice {
+  background-color: rgba(241, 196, 15, 0.1);
+  border: 1px solid rgba(241, 196, 15, 0.3);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  color: #7d6608;
+  font-family: var(--font-secondary);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.important-notice h4 {
+  margin-top: 0;
+  font-weight: 600;
+}
+
+/* Ajustes para protocolo file:// */
+.is-file-protocol .file-protocol-warning {
+  display: block;
+}
+
+.file-protocol-warning {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(230, 126, 34, 0.9);
+  color: white;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-size: 0.85rem;
+  z-index: 1000;
+}
+
+.file-protocol-warning code {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.15rem 0.3rem;
+  border-radius: 4px;
+  font-family: monospace;
+  margin: 0 0.25rem;
+}

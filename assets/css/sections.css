@@ -1,0 +1,563 @@
+/* ============================
+   SECTIONS.CSS
+   Estilos específicos para seções do relatório:
+   - Estilos comuns para seções
+   - Personalizações por seção
+============================ */
+
+/* Estilos comuns para todas as seções */
+.section {
+  padding: var(--space-xl) 0;
+  border-bottom: 1px solid var(--color-light-gray);
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.section__header {
+  margin-bottom: var(--space-l);
+  text-align: center;
+}
+
+.section__title {
+  font-size: var(--font-size-xxl);
+  color: var(--color-secondary);
+  margin-bottom: var(--space-s);
+}
+
+.section__subtitle {
+  font-size: var(--font-size-l);
+  color: var(--color-gray);
+  font-weight: var(--font-weight-regular);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.section__content {
+  margin-bottom: var(--space-l);
+}
+
+.section__footer {
+  text-align: center;
+  margin-top: var(--space-xl);
+  padding-top: var(--space-m);
+}
+
+/* Sumário Executivo */
+.section--sumario-executivo .section__content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-l);
+}
+
+/* Análise de Mercado */
+.section--analise-mercado .market-data {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-m);
+  margin-bottom: var(--space-l);
+}
+
+.section--analise-mercado .market-trends {
+  margin-top: var(--space-xl);
+}
+
+/* Análise de Concorrência */
+.section--analise-concorrencia .competitors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-l);
+  margin-bottom: var(--space-xl);
+}
+
+.competitor-card {
+  border: 1px solid var(--color-light-gray);
+  border-radius: var(--border-radius-m);
+  overflow: hidden;
+}
+
+.competitor-card__header {
+  padding: var(--space-m);
+  border-bottom: 1px solid var(--color-light-gray);
+  background-color: var(--color-off-white);
+}
+
+.competitor-card__body {
+  padding: var(--space-m);
+}
+
+.competitor-card__metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-s);
+}
+
+.competitor-card__metric {
+  text-align: center;
+}
+
+.competitor-card__metric-value {
+  font-size: var(--font-size-l);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+.competitor-card__metric-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray);
+}
+
+/* Público-Alvo */
+.section--publico-alvo .personas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-l);
+}
+
+.persona-card {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-m);
+  box-shadow: var(--shadow-m);
+  overflow: hidden;
+}
+
+.persona-card__header {
+  background-color: var(--color-secondary-light);
+  padding: var(--space-m);
+  text-align: center;
+}
+
+.persona-card__image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--color-white);
+}
+
+.persona-card__name {
+  font-size: var(--font-size-l);
+  margin: var(--space-s) 0 0;
+}
+
+.persona-card__title {
+  font-size: var(--font-size-s);
+  color: var(--color-gray);
+  margin: var(--space-xs) 0 0;
+}
+
+.persona-card__body {
+  padding: var(--space-m);
+}
+
+.persona-card__section {
+  margin-bottom: var(--space-m);
+}
+
+.persona-card__section-title {
+  font-size: var(--font-size-s);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-xs);
+  color: var(--color-secondary);
+}
+
+/* Precificação e Custos */
+.section--precificacao-custos .pricing-tables {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-l);
+}
+
+.cost-breakdown {
+  margin-top: var(--space-xl);
+}
+
+/* Marketplaces */
+.section--marketplaces .marketplace-comparison {
+  overflow-x: auto;
+}
+
+.marketplace-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-m);
+  margin-top: var(--space-l);
+}
+
+/* E-commerce Próprio */
+.section--ecommerce-proprio .platform-comparison {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-l);
+}
+
+.platform-card {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-m);
+  box-shadow: var(--shadow-m);
+  overflow: hidden;
+}
+
+.platform-card__header {
+  padding: var(--space-m);
+  border-bottom: 1px solid var(--color-light-gray);
+  text-align: center;
+}
+
+.platform-card__logo {
+  max-height: 60px;
+  max-width: 80%;
+}
+
+.platform-card__body {
+  padding: var(--space-m);
+}
+
+.platform-card__feature-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.platform-card__feature {
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid var(--color-light-gray);
+  display: flex;
+  align-items: center;
+}
+
+.platform-card__feature:last-child {
+  border-bottom: none;
+}
+
+.platform-card__feature-icon {
+  margin-right: var(--space-xs);
+  color: var(--color-success);
+}
+
+/* Redes Sociais */
+.section--redes-sociais .social-strategy {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-l);
+}
+
+.channel-card {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-m);
+  box-shadow: var(--shadow-m);
+  padding: var(--space-m);
+  display: flex;
+  flex-direction: column;
+}
+
+.channel-card__header {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-m);
+}
+
+.channel-card__icon {
+  font-size: var(--font-size-xl);
+  margin-right: var(--space-s);
+  color: var(--color-secondary);
+}
+
+.channel-card__title {
+  font-size: var(--font-size-l);
+  margin: 0;
+}
+
+.channel-card__metrics {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: var(--space-m);
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.channel-card__metric {
+  text-align: center;
+}
+
+.channel-card__metric-value {
+  font-size: var(--font-size-l);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+
+.channel-card__metric-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-gray);
+}
+
+/* Fidelização de Clientes */
+.section--fidelizacao-clientes .loyalty-strategies {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-l);
+}
+
+.journey-map {
+  margin: var(--space-xl) 0;
+}
+
+/* Plano de Expansão */
+.section--plano-expansao .timeline {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  width: 4px;
+  background-color: var(--color-light-gray);
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.timeline-item {
+  padding: var(--space-m) 0;
+  position: relative;
+  width: 50%;
+  box-sizing: border-box;
+}
+
+.timeline-item:nth-child(odd) {
+  left: 0;
+  padding-right: var(--space-xl);
+  text-align: right;
+}
+
+.timeline-item:nth-child(even) {
+  left: 50%;
+  padding-left: var(--space-xl);
+}
+
+.timeline-item__content {
+  background-color: var(--color-white);
+  padding: var(--space-m);
+  border-radius: var(--border-radius-m);
+  box-shadow: var(--shadow-m);
+  position: relative;
+}
+
+.timeline-item:nth-child(odd) .timeline-item__content::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  right: -10px;
+  top: 20px;
+  background-color: var(--color-white);
+  transform: rotate(45deg);
+  box-shadow: var(--shadow-m);
+}
+
+.timeline-item:nth-child(even) .timeline-item__content::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: -10px;
+  top: 20px;
+  background-color: var(--color-white);
+  transform: rotate(45deg);
+  box-shadow: var(--shadow-m);
+}
+
+.timeline-item__dot {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--color-secondary);
+  top: 30px;
+  z-index: 1;
+}
+
+.timeline-item:nth-child(odd) .timeline-item__dot {
+  right: -10px;
+}
+
+.timeline-item:nth-child(even) .timeline-item__dot {
+  left: -10px;
+}
+
+.timeline-item__phase {
+  font-size: var(--font-size-s);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-secondary);
+  margin-bottom: var(--space-xs);
+}
+
+.timeline-item__title {
+  font-size: var(--font-size-m);
+  margin-bottom: var(--space-xs);
+}
+
+/* Análise de Riscos */
+.section--analise-riscos .risk-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-l);
+  margin-bottom: var(--space-xl);
+}
+
+.risk-card {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-m);
+  box-shadow: var(--shadow-m);
+  overflow: hidden;
+}
+
+.risk-card__header {
+  padding: var(--space-m);
+  color: var(--color-white);
+}
+
+.risk-card--high .risk-card__header {
+  background-color: var(--color-danger);
+}
+
+.risk-card--medium .risk-card__header {
+  background-color: var(--color-warning);
+}
+
+.risk-card--low .risk-card__header {
+  background-color: var(--color-success);
+}
+
+.risk-card__title {
+  margin: 0;
+  font-size: var(--font-size-m);
+}
+
+.risk-card__body {
+  padding: var(--space-m);
+}
+
+.risk-card__mitigation {
+  padding: var(--space-m);
+  background-color: var(--color-off-white);
+  border-top: 1px solid var(--color-light-gray);
+}
+
+.risk-card__mitigation-title {
+  font-size: var(--font-size-s);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--space-xs);
+}
+
+/* Conclusão e Recomendações */
+.section--conclusao-recomendacoes .recommendations {
+  margin-top: var(--space-l);
+}
+
+.section--conclusao-recomendacoes .action-steps {
+  counter-reset: steps;
+  margin-top: var(--space-xl);
+}
+
+.action-step {
+  position: relative;
+  padding: var(--space-m) var(--space-m) var(--space-m) var(--space-xxl);
+  margin-bottom: var(--space-m);
+  background-color: var(--color-off-white);
+  border-radius: var(--border-radius-m);
+}
+
+.action-step::before {
+  counter-increment: steps;
+  content: counter(steps);
+  position: absolute;
+  left: var(--space-s);
+  top: var(--space-m);
+  width: 30px;
+  height: 30px;
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-weight-bold);
+}
+
+.action-step__title {
+  font-size: var(--font-size-m);
+  margin-top: 0;
+  margin-bottom: var(--space-xs);
+}
+
+/* Layout responsivo para seções */
+@media (max-width: 768px) {
+  .section__title {
+    font-size: var(--font-size-xl);
+  }
+  
+  .section__subtitle {
+    font-size: var(--font-size-m);
+  }
+  
+  .timeline::before {
+    left: 31px;
+  }
+  
+  .timeline-item {
+    width: 100%;
+    padding-left: 70px;
+    padding-right: 25px;
+  }
+  
+  .timeline-item:nth-child(odd) {
+    left: 0;
+    text-align: left;
+  }
+  
+  .timeline-item:nth-child(even) {
+    left: 0;
+  }
+  
+  .timeline-item:nth-child(odd) .timeline-item__content::after,
+  .timeline-item:nth-child(even) .timeline-item__content::after {
+    left: -10px;
+    right: auto;
+  }
+  
+  .timeline-item:nth-child(odd) .timeline-item__dot,
+  .timeline-item:nth-child(even) .timeline-item__dot {
+    left: 22px;
+    right: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    padding: var(--space-l) 0;
+  }
+  
+  .section__header {
+    margin-bottom: var(--space-m);
+  }
+  
+  .section__title {
+    font-size: var(--font-size-l);
+  }
+  
+  .section__subtitle {
+    font-size: var(--font-size-s);
+  }
+  
+  .competitor-card__metrics,
+  .persona-card__header,
+  .platform-card__header,
+  .channel-card__header {
+    flex-direction: column;
+  }
+}

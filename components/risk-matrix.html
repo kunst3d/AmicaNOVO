@@ -1,0 +1,165 @@
+<!-- Risk Matrix Component -->
+<div class="risk-matrix-component" id="$RISK_MATRIX_ID">
+  <div class="risk-matrix__header">
+    <h4 class="risk-matrix__title">{{risk-matrix-title}}</h4>
+    <div class="risk-matrix__controls">
+      <div class="risk-category-filter">
+        <label for="risk-category-select">Categoria:</label>
+        <select id="risk-category-select" class="category-select">
+          <option value="all">Todas as categorias</option>
+          <option value="strategic">Estratégicos</option>
+          <option value="financial">Financeiros</option>
+          <option value="operational">Operacionais</option>
+          <option value="compliance">Compliance</option>
+          <option value="market">Mercado</option>
+        </select>
+      </div>
+      <div class="risk-severity-filter">
+        <label for="risk-severity-select">Severidade Mínima:</label>
+        <select id="risk-severity-select" class="severity-select">
+          <option value="all">Todos os riscos</option>
+          <option value="high">Alto e Crítico</option>
+          <option value="critical">Apenas Críticos</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="risk-matrix">
+    <div class="risk-matrix__grid">
+      <!-- Eixo Y (Impacto) -->
+      <div class="risk-matrix__axis risk-matrix__axis--y">
+        <div class="risk-matrix__label">Alto</div>
+        <div class="risk-matrix__label">Médio</div>
+        <div class="risk-matrix__label">Baixo</div>
+      </div>
+      
+      <!-- Grid da Matriz -->
+      <div class="risk-matrix__cells">
+        <!-- Linha 1 (Alto Impacto) -->
+        <div class="risk-matrix__cell" data-impact="high" data-probability="low">
+          <div class="risk-matrix__items">{{risk-high-low}}</div>
+        </div>
+        <div class="risk-matrix__cell" data-impact="high" data-probability="medium">
+          <div class="risk-matrix__items">{{risk-high-medium}}</div>
+        </div>
+        <div class="risk-matrix__cell risk-matrix__level--critical" data-impact="high" data-probability="high">
+          <div class="risk-matrix__items">{{risk-high-high}}</div>
+        </div>
+        
+        <!-- Linha 2 (Médio Impacto) -->
+        <div class="risk-matrix__cell" data-impact="medium" data-probability="low">
+          <div class="risk-matrix__items">{{risk-medium-low}}</div>
+        </div>
+        <div class="risk-matrix__cell" data-impact="medium" data-probability="medium">
+          <div class="risk-matrix__items">{{risk-medium-medium}}</div>
+        </div>
+        <div class="risk-matrix__cell" data-impact="medium" data-probability="high">
+          <div class="risk-matrix__items">{{risk-medium-high}}</div>
+        </div>
+        
+        <!-- Linha 3 (Baixo Impacto) -->
+        <div class="risk-matrix__cell" data-impact="low" data-probability="low">
+          <div class="risk-matrix__items">{{risk-low-low}}</div>
+        </div>
+        <div class="risk-matrix__cell" data-impact="low" data-probability="medium">
+          <div class="risk-matrix__items">{{risk-low-medium}}</div>
+        </div>
+        <div class="risk-matrix__cell" data-impact="low" data-probability="high">
+          <div class="risk-matrix__items">{{risk-low-high}}</div>
+        </div>
+      </div>
+      
+      <!-- Eixo X (Probabilidade) -->
+      <div class="risk-matrix__axis risk-matrix__axis--x">
+        <div class="risk-matrix__label">Baixa</div>
+        <div class="risk-matrix__label">Média</div>
+        <div class="risk-matrix__label">Alta</div>
+      </div>
+    </div>
+    
+    <div class="risk-matrix__legend">
+      <div class="risk-matrix__legend-item">
+        <span class="risk-matrix__legend-color risk-matrix__level--low"></span>
+        <span class="risk-matrix__legend-text">Baixo Risco</span>
+      </div>
+      <div class="risk-matrix__legend-item">
+        <span class="risk-matrix__legend-color risk-matrix__level--medium"></span>
+        <span class="risk-matrix__legend-text">Médio Risco</span>
+      </div>
+      <div class="risk-matrix__legend-item">
+        <span class="risk-matrix__legend-color risk-matrix__level--high"></span>
+        <span class="risk-matrix__legend-text">Alto Risco</span>
+      </div>
+      <div class="risk-matrix__legend-item">
+        <span class="risk-matrix__legend-color risk-matrix__level--critical"></span>
+        <span class="risk-matrix__legend-text">Risco Crítico</span>
+      </div>
+    </div>
+    
+    <div class="risk-matrix__footer">
+      <p class="risk-matrix__source">Fonte: {{risk-matrix-source}}</p>
+    </div>
+  </div>
+  
+  <!-- Detalhes do risco selecionado -->
+  <div class="risk-details">
+    <h5 class="risk-details-title">Detalhes do Risco</h5>
+    <div class="risk-details-content">
+      <p class="risk-select-prompt">Selecione um risco na matriz para visualizar detalhes</p>
+      <div class="selected-risk-details" style="display: none;">
+        <div class="risk-detail-item">
+          <span class="risk-detail-label">Nome:</span>
+          <span class="risk-detail-value" id="selected-risk-name">-</span>
+        </div>
+        <div class="risk-detail-item">
+          <span class="risk-detail-label">Categoria:</span>
+          <span class="risk-detail-value" id="selected-risk-category">-</span>
+        </div>
+        <div class="risk-detail-item">
+          <span class="risk-detail-label">Probabilidade:</span>
+          <span class="risk-detail-value" id="selected-risk-probability">-</span>
+        </div>
+        <div class="risk-detail-item">
+          <span class="risk-detail-label">Impacto:</span>
+          <span class="risk-detail-value" id="selected-risk-impact">-</span>
+        </div>
+        <div class="risk-detail-item">
+          <span class="risk-detail-label">Índice de Risco:</span>
+          <span class="risk-detail-value" id="selected-risk-index">-</span>
+        </div>
+        <div class="risk-detail-item">
+          <span class="risk-detail-label">Descrição:</span>
+          <p class="risk-detail-value" id="selected-risk-description">-</p>
+        </div>
+        <div class="risk-detail-item">
+          <span class="risk-detail-label">Mitigação:</span>
+          <p class="risk-detail-value" id="selected-risk-mitigation">-</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INSTRUÇÕES DE USO:
+1. Substitua $RISK_MATRIX_ID pelo ID único do componente
+2. Substitua $RISK_MATRIX_TITLE pelo título da matriz de riscos
+3. Os dados dos riscos devem ser fornecidos via JavaScript
+4. Utilize o script risk-matrix.js para inicializar a matriz
+
+Exemplo de inicialização no JavaScript:
+const riskMatrix = new RiskMatrix('risk-matrix-container', {
+  risks: [
+    {
+      id: 'risk1',
+      name: 'Aumento de custos de matéria-prima',
+      category: 'financial',
+      probability: 4,
+      impact: 5,
+      description: 'Aumento significativo nos custos de matéria-prima devido à variação cambial.',
+      mitigation: 'Estabelecer contratos de fornecimento com preços fixados por período.'
+    },
+    // Mais riscos...
+  ]
+});
+-->

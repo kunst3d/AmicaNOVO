@@ -1,0 +1,374 @@
+/* ============================
+   COMPONENTS.CSS
+   Componentes reutilizáveis:
+   - Cards
+   - Botões
+   - Badges
+   - Indicadores
+   - Tabelas
+   - Gráficos
+   - Citações
+   - Tooltips
+============================ */
+
+/* ---- Cards ---- */
+.content-card {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-m);
+  box-shadow: var(--shadow-m);
+  padding: var(--space-l);
+  margin-bottom: var(--space-l);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.content-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-l);
+}
+
+.content-card--highlight {
+  border-left: var(--border-width-thick) solid var(--color-primary);
+}
+
+.content-card--important {
+  border-left: var(--border-width-thick) solid var(--color-secondary);
+}
+
+.content-card__header {
+  margin-bottom: var(--space-m);
+}
+
+.content-card__title {
+  font-size: var(--font-size-l);
+  margin-bottom: var(--space-xs);
+}
+
+.content-card__subtitle {
+  font-size: var(--font-size-m);
+  color: var(--color-gray);
+  margin-top: 0;
+}
+
+.content-card__body {
+  margin-bottom: var(--space-m);
+}
+
+.content-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-l);
+  padding-top: var(--space-m);
+  border-top: 1px solid var(--color-light-gray);
+}
+
+/* Card para KPIs */
+.kpi-card {
+  background-color: var(--color-white);
+  padding: var(--space-m);
+  border-radius: var(--border-radius-m);
+  text-align: center;
+  transition: transform var(--transition-fast);
+  box-shadow: var(--shadow-s);
+}
+
+.kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-m);
+}
+
+.kpi-card__value {
+  font-size: var(--font-size-xxl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-xs);
+  color: var(--color-secondary);
+}
+
+.kpi-card__label {
+  font-size: var(--font-size-s);
+  color: var(--color-gray);
+  margin-bottom: 0;
+}
+
+.kpi-card--primary .kpi-card__value {
+  color: var(--color-primary);
+}
+
+.kpi-card--secondary .kpi-card__value {
+  color: var(--color-secondary);
+}
+
+.kpi-card--success .kpi-card__value {
+  color: var(--color-success);
+}
+
+.kpi-card--warning .kpi-card__value {
+  color: var(--color-warning);
+}
+
+.kpi-card--danger .kpi-card__value {
+  color: var(--color-danger);
+}
+
+/* ---- Botões ---- */
+.btn {
+  display: inline-block;
+  padding: var(--space-s) var(--space-m);
+  border-radius: var(--border-radius-s);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  border: none;
+  font-size: var(--font-size-s);
+}
+
+.btn--primary {
+  background-color: var(--color-primary);
+  color: var(--color-black);
+}
+
+.btn--primary:hover {
+  background-color: var(--color-primary-dark);
+  color: var(--color-white);
+}
+
+.btn--secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+}
+
+.btn--secondary:hover {
+  background-color: var(--color-secondary-light);
+}
+
+.btn--outline {
+  background-color: transparent;
+  border: var(--border-width-thin) solid var(--color-gray);
+  color: var(--color-gray);
+}
+
+.btn--outline:hover {
+  background-color: var(--color-gray);
+  color: var(--color-white);
+}
+
+.btn--link {
+  background-color: transparent;
+  color: var(--color-secondary);
+  padding: 0;
+  text-decoration: underline;
+}
+
+.btn--link:hover {
+  color: var(--color-secondary-light);
+}
+
+.btn--small {
+  padding: var(--space-xs) var(--space-s);
+  font-size: var(--font-size-xs);
+}
+
+.btn--large {
+  padding: var(--space-m) var(--space-l);
+  font-size: var(--font-size-m);
+}
+
+/* ---- Badges ---- */
+.badge {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-s);
+  border-radius: var(--border-radius-pill);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  text-align: center;
+}
+
+.badge--primary {
+  background-color: var(--color-primary);
+  color: var(--color-black);
+}
+
+.badge--secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+}
+
+.badge--success {
+  background-color: var(--color-success);
+  color: var(--color-white);
+}
+
+.badge--warning {
+  background-color: var(--color-warning);
+  color: var(--color-black);
+}
+
+.badge--danger {
+  background-color: var(--color-danger);
+  color: var(--color-white);
+}
+
+.badge--light {
+  background-color: var(--color-light-gray);
+  color: var(--color-dark-gray);
+}
+
+/* ---- Indicadores ---- */
+.indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: var(--space-xs);
+}
+
+.indicator--success {
+  background-color: var(--color-success);
+}
+
+.indicator--warning {
+  background-color: var(--color-warning);
+}
+
+.indicator--danger {
+  background-color: var(--color-danger);
+}
+
+.indicator--info {
+  background-color: var(--color-info);
+}
+
+/* ---- Tabelas ---- */
+.table-container {
+  overflow-x: auto;
+  margin-bottom: var(--space-l);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-s);
+}
+
+.table th,
+.table td {
+  padding: var(--space-s);
+  text-align: left;
+  border-bottom: 1px solid var(--color-light-gray);
+}
+
+.table th {
+  background-color: var(--color-off-white);
+  font-weight: var(--font-weight-semibold);
+}
+
+.table tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.table--striped tr:nth-child(even) {
+  background-color: var(--color-off-white);
+}
+
+.table--bordered th,
+.table--bordered td {
+  border: 1px solid var(--color-light-gray);
+}
+
+.table--compact th,
+.table--compact td {
+  padding: var(--space-xs);
+}
+
+/* ---- Gráficos ---- */
+.chart-container {
+  position: relative;
+  height: 300px;
+  margin-bottom: var(--space-l);
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-s);
+  margin-top: var(--space-m);
+  font-size: var(--font-size-xs);
+}
+
+.chart-legend__item {
+  display: flex;
+  align-items: center;
+}
+
+.chart-legend__color {
+  width: 12px;
+  height: 12px;
+  margin-right: var(--space-xs);
+  border-radius: 2px;
+}
+
+/* ---- Citações ---- */
+.quote {
+  font-family: var(--font-family-primary);
+  font-style: italic;
+  font-size: var(--font-size-l);
+  line-height: var(--line-height-loose);
+  color: var(--color-dark-gray);
+  padding: var(--space-l);
+  border-left: 3px solid var(--color-primary);
+  background-color: var(--color-off-white);
+  margin: var(--space-l) 0;
+}
+
+.quote__attribution {
+  display: block;
+  font-style: normal;
+  font-size: var(--font-size-s);
+  color: var(--color-gray);
+  margin-top: var(--space-s);
+  text-align: right;
+}
+
+/* ---- Tooltips ---- */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+}
+
+.tooltip__text {
+  visibility: hidden;
+  width: 200px;
+  background-color: var(--color-dark-gray);
+  color: var(--color-white);
+  text-align: center;
+  border-radius: var(--border-radius-s);
+  padding: var(--space-s);
+  position: absolute;
+  z-index: var(--z-index-tooltip);
+  bottom: 125%;
+  left: 50%;
+  margin-left: -100px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  font-size: var(--font-size-xs);
+}
+
+.tooltip__text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: var(--color-dark-gray) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltip__text {
+  visibility: visible;
+  opacity: 1;
+}

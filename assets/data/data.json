@@ -1,0 +1,109 @@
+{
+  "relatorio": {
+    "titulo": "Análise de Mercado e Estratégia de Implementação - Amica",
+    "data": "Abril 2025",
+    "versao": "1.0",
+    "autor": "Equipe Estratégica"
+  },
+  "resumoExecutivo": {
+    "paragrafos": [
+      "A Amica apresenta oportunidade significativa no mercado brasileiro de semijoias, com potencial de atingir faturamento de R$1,2 milhões em 24 meses.",
+      "Posicionamento recomendado: design acessível com produção nacional, enfatizando leveza e autenticidade.",
+      "Estratégia de canais: foco inicial em marketplaces selecionados e mídias sociais, expandindo para e-commerce próprio após validação.",
+      "Implementação em três fases: Lançamento (validação), Crescimento (escalabilidade) e Consolidação (expansão internacional)."
+    ]
+  },
+  "mercado": {
+    "tamanhoMercado": {
+      "valorTotal": 4600000000,
+      "crescimentoAnual": 0.089,
+      "participacaoSemijoias": 0.32
+    },
+    "concorrentes": [
+      {
+        "nome": "Rommanel",
+        "participacaoMercado": 0.12,
+        "precoMedio": 189,
+        "fortalezas": ["Distribuição nacional", "Reconhecimento de marca"],
+        "fraquezas": ["Design conservador", "Baixa presença digital"]
+      },
+      {
+        "nome": "Joias Vip",
+        "participacaoMercado": 0.089,
+        "precoMedio": 145,
+        "fortalezas": ["Presença em marketplaces", "Estratégia de conteúdo"],
+        "fraquezas": ["Qualidade inconsistente", "Atendimento ao cliente"]
+      }
+    ],
+    "tendencias": ["Minimalismo", "Peças versáteis", "Sustentabilidade", "Personalização"]
+  },
+  "estrategiaPrecificacao": {
+    "markup": {
+      "brincos": {"custo": 18.5, "markup": 4.2, "precoFinal": 77.7, "margem": 0.76},
+      "aneis": {"custo": 22.0, "markup": 3.8, "precoFinal": 83.6, "margem": 0.74},
+      "colares": {"custo": 26.5, "markup": 4.0, "precoFinal": 106.0, "margem": 0.75},
+      "pulseiras": {"custo": 21.0, "markup": 4.1, "precoFinal": 86.1, "margem": 0.76}
+    },
+    "estrategiasRecomendadas": ["Segmentação por valor", "Linhas Essential, Premium e Exclusive"]
+  },
+  "canaisVenda": {
+    "marketplaces": {
+      "participacao": 0.65,
+      "plataformasRecomendadas": ["Mercado Livre", "Amazon", "Shopee"],
+      "taxasMedias": 0.16
+    },
+    "redesSociais": {
+      "participacao": 0.25,
+      "plataformasRecomendadas": ["Instagram", "TikTok"],
+      "taxasMedias": 0.05
+    },
+    "ecommerceProprio": {
+      "participacao": 0.10,
+      "custosImplementacao": 15000,
+      "taxasMedias": 0.035
+    }
+  },
+  "fidelizacao": {
+    "estrategias": [
+      {
+        "nome": "Programa pontos/cashback",
+        "roi": 2.1,
+        "tempoImplementacao": "2 meses"
+      },
+      {
+        "nome": "Clube de assinatura",
+        "roi": 3.5,
+        "tempoImplementacao": "3 meses"
+      }
+    ],
+    "metricas": {
+      "retencao": {"benchmark": 0.45, "meta": 0.55},
+      "ltv": {"benchmark": "R$720", "meta": "R$890"},
+      "nps": {"benchmark": 72, "meta": 82}
+    }
+  },
+  "implementacao": {
+    "fases": [
+      {
+        "nome": "Lançamento",
+        "duracao": "3 meses",
+        "acoes": ["Desenvolvimento SKUs iniciais", "Cadastro marketplaces", "Estratégia conteúdo"]
+      },
+      {
+        "nome": "Crescimento",
+        "duracao": "4-12 meses",
+        "acoes": ["Lançamento e-commerce", "Expansão linhas produto", "Programa fidelidade"]
+      },
+      {
+        "nome": "Consolidação",
+        "duracao": "13-24 meses",
+        "acoes": ["Expansão internacional", "Parcerias estratégicas", "Canais offline selecionados"]
+      }
+    ],
+    "kpis": {
+      "6meses": {"faturamento": 290000, "margemLiquida": 0.28, "cac": 32},
+      "12meses": {"faturamento": 680000, "margemLiquida": 0.32, "cac": 28},
+      "24meses": {"faturamento": 1200000, "margemLiquida": 0.36, "cac": 24}
+    }
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "estiloGlobal": {
+    "fontePrincipal": "'Montserrat', sans-serif",
+    "fonteTitulos": "'Playfair Display', serif",
+    "cores": {
+      "primaria": "#8C6A5B",
+      "secundaria": "#D4B49D",
+      "terciaria": "#E9DDD2",
+      "destaque": "#65856E",
+      "texto": "#424242",
+      "fundo": "#FFFFFF"
+    },
+    "espessuraBorda": 1,
+    "raioCantos": 4,
+    "opacidadePreenchimento": 0.8,
+    "tamanhoFonte": {
+      "titulo": 18,
+      "subtitulo": 14,
+      "eixos": 12,
+      "legenda": 11,
+      "tooltip": 12
+    }
+  },
+  "graficos": [
+    {
+      "id": "crescimentoMercado",
+      "tipo": "line",
+      "titulo": "Crescimento do Mercado de Semijoias (R$ bilhões)",
+      "descricao": "Projeção do crescimento do mercado brasileiro de semijoias",
+      "dados": "mercado.crescimento",
+      "config": {
+        "eixoX": {
+          "titulo": "Ano",
+          "exibirGrade": false
+        },
+        "eixoY": {
+          "titulo": "Faturamento (R$ bi)",
+          "exibirGrade": true,
+          "iniciarZero": true
+        },
+        "legenda": true,
+        "animado": true,
+        "duracao": 1200
+      }
+    },
+    {
+      "id": "participacaoConcorrentes",
+      "tipo": "pie",
+      "titulo": "Participação de Mercado - Semijoias",
+      "descricao": "Distribuição da participação dos principais players",
+      "dados": "mercado.participacao",
+      "config": {
+        "exibirLegenda": true,
+        "posicaoLegenda": "right",
+        "exibirLabels": true,
+        "exibirPorcentagem": true,
+        "animado": true,
+        "duracao": 800
+      }
+    },
+    {
+      "id": "comparativoPrecos",
+      "tipo": "bar",
+      "titulo": "Preço Médio por Concorrente (R$)",
+      "descricao": "Comparativo de preços médios no mercado de semijoias",
+      "dados": "mercado.precos",
+      "config": {
+        "eixoX": {
+          "titulo": "Marca",
+          "exibirGrade": false
+        },
+        "eixoY": {
+          "titulo": "Preço Médio (R$)",
+          "exibirGrade": true,
+          "iniciarZero": true
+        },
+        "exibirValores": true,
+        "animado": true,
+        "duracao": 800
+      }
+    },
+    {
+      "id": "projecaoFaturamento",
+      "tipo": "line",
+      "titulo": "Projeção de Faturamento Amica",
+      "descricao": "Evolução do faturamento projetado nos primeiros 24 meses",
+      "dados": "implementacao.faturamento",
+      "config": {
+        "eixoX": {
+          "titulo": "Mês",
+          "exibirGrade": false
+        },
+        "eixoY": {
+          "titulo": "Faturamento (R$)",
+          "exibirGrade": true,
+          "iniciarZero": true,
+          "formatoDinheiro": true
+        },
+        "area": true,
+        "opacidadeArea": 0.3,
+        "cores": ["#8C6A5B"],
+        "pontosDestaque": [6, 12, 24],
+        "animado": true,
+        "duracao": 1500
+      }
+    },
+    {
+      "id": "canaisVenda",
+      "tipo": "pie",
+      "titulo": "Distribuição de Canais de Venda",
+      "descricao": "Participação recomendada de cada canal nas vendas",
+      "dados": "canaisVenda.participacao",
+      "config": {
+        "exibirLegenda": true,
+        "posicaoLegenda": "bottom",
+        "exibirLabels": true,
+        "exibirPorcentagem": true,
+        "animado": true,
+        "duracao": 800
+      }
+    },
+    {
+      "id": "margemProdutos",
+      "tipo": "bar",
+      "titulo": "Margem por Categoria de Produto",
+      "descricao": "Comparativo de margens por tipo de semijoia",
+      "dados": "estrategiaPrecificacao.margens",
+      "config": {
+        "eixoX": {
+          "titulo": "Categoria",
+          "exibirGrade": false
+        },
+        "eixoY": {
+          "titulo": "Margem (%)",
+          "exibirGrade": true,
+          "iniciarZero": true,
+          "formatoPorcentagem": true
+        },
+        "exibirValores": true,
+        "animado": true,
+        "duracao": 800
+      }
+    },
+    {
+      "id": "kpisImplementacao",
+      "tipo": "radar",
+      "titulo": "KPIs de Implementação",
+      "descricao": "Evolução dos principais indicadores ao longo do tempo",
+      "dados": "implementacao.kpis",
+      "config": {
+        "categorias": ["Faturamento", "Margem", "CAC", "LTV", "NPS", "Conversão"],
+        "series": ["6 meses", "12 meses", "24 meses"],
+        "exibirLegenda": true,
+        "posicaoLegenda": "bottom",
+        "escala": [0, 100],
+        "animado": true,
+        "duracao": 1000
+      }
+    }
+  ],
+  "responsividade": {
+    "breakpoints": {
+      "mobile": 480,
+      "tablet": 768,
+      "desktop": 1024
+    },
+    "ajustesMobile": {
+      "tamanhoFonte": {
+        "titulo": 14,
+        "subtitulo": 12,
+        "eixos": 10,
+        "legenda": 9
+      },
+      "exibirLegenda": false,
+      "alturaPadrao": 300
+    }
+  }
+}

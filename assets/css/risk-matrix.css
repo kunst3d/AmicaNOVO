@@ -1,0 +1,196 @@
+/* ============================
+   RISK-MATRIX.CSS
+   Estilos para matriz de riscos 5x5:
+   - Grid com eixos de probabilidade e impacto
+   - Gradiente de cores para níveis de risco
+   - Elementos interativos
+   - Visualização de detalhes
+============================ */
+
+/* Estilos para o componente de Matriz de Risco */
+
+.risk-matrix {
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+    padding: 15px;
+}
+
+.risk-matrix__title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 15px 0;
+    color: #333;
+}
+
+.risk-matrix__grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 1fr auto;
+    gap: 5px;
+}
+
+/* Estilos para os eixos */
+.risk-matrix__axis {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    font-size: 0.9rem;
+    color: #555;
+    font-weight: 500;
+}
+
+.risk-matrix__axis--y {
+    grid-column: 1;
+    grid-row: 1;
+    flex-direction: column;
+    padding-right: 10px;
+}
+
+.risk-matrix__axis--x {
+    grid-column: 2;
+    grid-row: 2;
+    padding-top: 10px;
+}
+
+/* Estilos para as células da matriz */
+.risk-matrix__cells {
+    grid-column: 2;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 4px;
+    aspect-ratio: 1 / 1;
+}
+
+.risk-matrix__cell {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    position: relative;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Cores baseadas no nível de risco */
+.risk-matrix__cell[data-impact="low"][data-probability="low"] {
+    background-color: rgba(76, 175, 80, 0.2);
+}
+
+.risk-matrix__cell[data-impact="low"][data-probability="medium"],
+.risk-matrix__cell[data-impact="medium"][data-probability="low"] {
+    background-color: rgba(76, 175, 80, 0.4);
+}
+
+.risk-matrix__cell[data-impact="low"][data-probability="high"],
+.risk-matrix__cell[data-impact="medium"][data-probability="medium"],
+.risk-matrix__cell[data-impact="high"][data-probability="low"] {
+    background-color: rgba(255, 193, 7, 0.3);
+}
+
+.risk-matrix__cell[data-impact="medium"][data-probability="high"],
+.risk-matrix__cell[data-impact="high"][data-probability="medium"] {
+    background-color: rgba(255, 87, 34, 0.3);
+}
+
+.risk-matrix__cell[data-impact="high"][data-probability="high"] {
+    background-color: rgba(244, 67, 54, 0.3);
+}
+
+/* Estilo para os itens de risco dentro das células */
+.risk-matrix__items {
+    font-size: 0.85rem;
+    word-break: break-word;
+}
+
+/* Legenda da matriz */
+.risk-matrix__legend {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+    padding: 10px;
+    border-top: 1px solid #eee;
+}
+
+.risk-matrix__legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.risk-matrix__legend-color {
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+    border-radius: 3px;
+}
+
+.risk-matrix__level--low {
+    background-color: rgba(76, 175, 80, 0.4);
+}
+
+.risk-matrix__level--medium {
+    background-color: rgba(255, 193, 7, 0.3);
+}
+
+.risk-matrix__level--high {
+    background-color: rgba(255, 87, 34, 0.3);
+}
+
+.risk-matrix__level--critical {
+    background-color: rgba(244, 67, 54, 0.3);
+}
+
+/* Rodapé da matriz */
+.risk-matrix__footer {
+    padding: 10px 15px;
+    border-top: 1px solid #eee;
+    font-size: 0.8rem;
+    color: #666;
+    text-align: right;
+}
+
+.risk-matrix__source {
+    margin: 0;
+    font-style: italic;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .risk-matrix__cells {
+        gap: 2px;
+    }
+    
+    .risk-matrix__cell {
+        padding: 4px;
+        min-height: 60px;
+        font-size: 0.7rem;
+    }
+    
+    .risk-matrix__axis {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .risk-matrix__legend {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .risk-matrix__cell {
+        min-height: 50px;
+    }
+}

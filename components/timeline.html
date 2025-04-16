@@ -1,0 +1,170 @@
+<!-- Timeline / Gantt Component -->
+<div class="timeline-component" id="$TIMELINE_ID">
+  <div class="timeline-header">
+    <h4 class="timeline-title">$TIMELINE_TITLE</h4>
+    <div class="timeline-controls">
+      <div class="timeline-view-toggle">
+        <button class="btn-view-toggle active" data-view="horizontal" aria-label="Visualização horizontal">
+          <span class="icon-horizontal"></span>
+        </button>
+        <button class="btn-view-toggle" data-view="vertical" aria-label="Visualização vertical">
+          <span class="icon-vertical"></span>
+        </button>
+      </div>
+      <div class="timeline-filters">
+        <select class="filter-select" aria-label="Filtrar por fase">
+          <option value="all">Todas as fases</option>
+          <option value="phase1">Fase 1: Lançamento</option>
+          <option value="phase2">Fase 2: Crescimento</option>
+          <option value="phase3">Fase 3: Consolidação</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Visualização Horizontal (Gantt) -->
+  <div class="timeline-view horizontal-view">
+    <!-- Cabeçalho com escala de tempo -->
+    <div class="timeline-scale">
+      <div class="timeline-months">
+        <!-- Os meses serão gerados dinamicamente -->
+        <div class="timeline-month">Jan</div>
+        <div class="timeline-month">Fev</div>
+        <div class="timeline-month">Mar</div>
+        <!-- ... outros meses ... -->
+      </div>
+    </div>
+    
+    <!-- Fases e atividades -->
+    <div class="timeline-phases">
+      <!-- Fase 1: Lançamento -->
+      <div class="timeline-phase" data-phase="phase1">
+        <div class="phase-header">
+          <div class="phase-title">
+            <span class="phase-icon"></span>
+            <h5>Fase 1: Lançamento</h5>
+            <span class="phase-duration">3 meses</span>
+          </div>
+          <button class="btn-toggle-phase" aria-label="Expandir/colapsar fase">
+            <span class="icon-chevron-down"></span>
+          </button>
+        </div>
+        
+        <div class="phase-activities">
+          <!-- Exemplo de atividade -->
+          <div class="timeline-activity" data-activity-id="activity1">
+            <div class="activity-info">
+              <span class="activity-name">Desenvolvimento de SKUs iniciais</span>
+              <span class="activity-owner">Dir. Produto</span>
+              <span class="activity-status completed">Concluído</span>
+            </div>
+            <div class="activity-bar" style="left: 0%; width: 40%;">
+              <div class="activity-progress" style="width: 100%;"></div>
+              <div class="activity-milestone" style="left: 40%;" title="Protótipos aprovados"></div>
+            </div>
+          </div>
+          <!-- Mais atividades... -->
+        </div>
+      </div>
+      
+      <!-- Fase 2: Crescimento (estrutura similar) -->
+      <div class="timeline-phase" data-phase="phase2">
+        <!-- Conteúdo similar ao da Fase 1 -->
+      </div>
+      
+      <!-- Fase 3: Consolidação (estrutura similar) -->
+      <div class="timeline-phase" data-phase="phase3">
+        <!-- Conteúdo similar ao da Fase 1 -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Visualização Vertical (para mobile) -->
+  <div class="timeline-view vertical-view" style="display: none;">
+    <div class="timeline-vertical-phases">
+      <div class="v-phase-line"></div>
+      
+      <!-- Fase 1 -->
+      <div class="v-timeline-phase" data-phase="phase1">
+        <div class="v-phase-marker">
+          <div class="v-phase-icon"></div>
+          <div class="v-phase-connector"></div>
+        </div>
+        <div class="v-phase-content">
+          <div class="v-phase-header">
+            <h5>Fase 1: Lançamento</h5>
+            <span class="v-phase-duration">Jan-Mar 2024</span>
+          </div>
+          <div class="v-phase-activities">
+            <div class="v-timeline-activity">
+              <div class="v-activity-title">Desenvolvimento de SKUs iniciais</div>
+              <div class="v-activity-details">
+                <span class="v-activity-owner">Dir. Produto</span>
+                <span class="v-activity-duration">60 dias</span>
+                <span class="v-activity-status completed">Concluído</span>
+              </div>
+            </div>
+            <!-- Mais atividades... -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- Fases 2 e 3 seguem estrutura similar -->
+    </div>
+  </div>
+  
+  <!-- Detalhes da atividade selecionada -->
+  <div class="activity-details-panel" style="display: none;">
+    <div class="activity-details-header">
+      <h5 class="activity-details-title">Detalhes da Atividade</h5>
+      <button class="btn-close-details" aria-label="Fechar detalhes">
+        <span class="icon-close"></span>
+      </button>
+    </div>
+    <div class="activity-details-content">
+      <!-- Conteúdo será preenchido dinamicamente -->
+    </div>
+  </div>
+</div>
+
+<!-- INSTRUÇÕES DE USO:
+1. Substitua $TIMELINE_ID pelo ID único do componente
+2. Substitua $TIMELINE_TITLE pelo título do timeline
+3. Os dados das fases e atividades devem ser fornecidos via JavaScript
+4. Utilize o script timeline.js para inicializar o componente
+
+Exemplo de inicialização no JavaScript:
+const timeline = new Timeline('roadmap-timeline', {
+  timeframe: {
+    start: '2024-01-01',
+    end: '2025-12-31'
+  },
+  phases: [
+    {
+      id: 'phase1',
+      title: 'Fase 1: Lançamento',
+      start: '2024-01-01',
+      end: '2024-03-31',
+      activities: [
+        {
+          id: 'activity1',
+          name: 'Desenvolvimento de SKUs iniciais',
+          owner: 'Dir. Produto',
+          start: '2024-01-01',
+          end: '2024-03-01',
+          progress: 100,
+          status: 'completed',
+          milestones: [
+            {
+              date: '2024-02-10',
+              title: 'Protótipos aprovados'
+            }
+          ]
+        },
+        // Mais atividades...
+      ]
+    },
+    // Mais fases...
+  ]
+});
+-->

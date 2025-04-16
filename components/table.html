@@ -1,0 +1,76 @@
+<!-- Table Component Template -->
+<div class="table-component">
+  <div class="table-header">
+    <h4 class="table-title">{{table-title}}</h4>
+    <div class="table-controls">
+      <div class="table-search">
+        <input type="text" class="search-input" placeholder="Filtrar..." aria-label="Filtrar tabela">
+        <button class="search-button" aria-label="Buscar">
+          <span class="icon-search"></span>
+        </button>
+      </div>
+      <div class="table-actions">
+        <button class="btn-sort" data-sort="asc" aria-label="Ordenar">
+          <span class="icon-sort"></span>
+        </button>
+        <button class="btn-filter" aria-label="Filtros avançados">
+          <span class="icon-filter"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          {{table-headers}}
+        </tr>
+      </thead>
+      <tbody>
+        {{table-rows}}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-footer">
+    <div class="table-pagination">
+      <button class="pagination-prev" aria-label="Página anterior">
+        <span class="icon-arrow-left"></span>
+      </button>
+      <div class="pagination-numbers">
+        <span class="current-page">1</span> de <span class="total-pages">5</span>
+      </div>
+      <button class="pagination-next" aria-label="Próxima página">
+        <span class="icon-arrow-right"></span>
+      </button>
+    </div>
+    <div class="table-info">
+      <p class="table-source">Fonte: {{table-source}}</p>
+    </div>
+  </div>
+</div>
+
+<!-- Versão Mobile -->
+<div class="table-mobile-view">
+  <div class="table-cards">
+    $MOBILE_CARDS
+  </div>
+  <div class="table-mobile-footer">
+    <p class="table-source">Fonte: $TABLE_SOURCE</p>
+  </div>
+</div>
+
+<!-- INSTRUÇÕES DE USO:
+1. Substitua $TABLE_TITLE pelo título da tabela
+2. Substitua $TABLE_TYPE por uma classe específica: market-data, comparison, metrics, etc.
+3. Substitua $TABLE_HEADERS por <th>Cabeçalho 1</th><th>Cabeçalho 2</th>...
+4. Substitua $TABLE_ROWS pelo conteúdo em formato de linhas <tr><td>Valor 1</td>...</tr>
+5. Substitua $TABLE_FOOTER pelos totais ou rodapés, se aplicável
+6. Substitua $TABLE_SOURCE pela fonte dos dados
+7. Para a versão mobile, substitua $MOBILE_CARDS por cards individuais por linha:
+   <div class="data-card">
+     <div class="data-card-item"><span class="label">Cabeçalho 1:</span> <span class="value">Valor 1</span></div>
+     ...
+   </div>
+-->

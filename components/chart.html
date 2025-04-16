@@ -1,0 +1,29 @@
+<!-- Componente de Gráfico -->
+<div class="chart-container">
+    <h4 class="chart-title">{{chart-title}}</h4>
+    <div class="chart-wrapper">
+        <canvas id="{{chart-id}}" class="chart-canvas"></canvas>
+    </div>
+    <div class="chart-footer">
+        <p class="chart-description">{{chart-description}}</p>
+        <p class="chart-source">Fonte: {{chart-source}}</p>
+    </div>
+</div>
+
+<!-- INSTRUÇÕES DE USO:
+1. Substitua $CHART_CONTAINER_ID pelo ID único do container (ex: "vendas-chart-container")
+2. Substitua $CHART_TITLE pelo título do gráfico
+3. Substitua $CHART_ID pelo ID único do canvas para o Chart.js (ex: "vendas-chart")
+4. Substitua $CHART_ARIA_LABEL por uma descrição acessível do gráfico
+5. Substitua $LEGEND_ID pelo ID para a legenda (ex: "vendas-chart-legend")
+6. Substitua $CHART_SOURCE pela fonte dos dados
+7. Substitua $CHART_DESCRIPTION por uma breve descrição ou observação sobre o gráfico
+
+Exemplo de inicialização no JavaScript:
+const ctx = document.getElementById('vendas-chart');
+new Chart(ctx, {
+  type: 'bar',
+  data: {...},
+  options: {...}
+});
+-->
