@@ -6,36 +6,6 @@
     <title>Relatório Amica - Análise de Mercado e Estratégia</title>
     <meta name="description" content="Análise estratégica do mercado brasileiro de semijoias para entrada da marca Amica">
     
-    <!-- Detecção e configuração do GitHub Pages -->
-    <script>
-        // Função unificada para detectar GitHub Pages
-        function isGitHubPages() {
-            return window.location.hostname.includes('github.io') || 
-                   window.location.hostname.includes('pages.github.com') ||
-                   window.location.hostname.includes('githubusercontent.com');
-        }
-        
-        // Configurar base href para GitHub Pages
-        if (isGitHubPages()) {
-            const pathParts = window.location.pathname.split('/');
-            const repoName = pathParts[1]; // O primeiro segmento após a barra é o nome do repo
-            document.write(`<base href="/${repoName}/">`);
-            console.log(`Base href configurada para: /${repoName}/`);
-            
-            // Adicionar classe global para GitHub Pages
-            document.addEventListener('DOMContentLoaded', function() {
-                document.documentElement.classList.add('github-pages');
-                document.body.classList.add('github-pages-mode');
-            });
-            
-            // Adicionar meta tag para desabilitar cache
-            const meta = document.createElement('meta');
-            meta.setAttribute('http-equiv', 'Cache-Control');
-            meta.setAttribute('content', 'no-cache, no-store, must-revalidate');
-            document.head.appendChild(meta);
-        }
-    </script>
-    
     <!-- Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -52,23 +22,14 @@
     <link rel="stylesheet" href="assets/css/timeline.css">
     <link rel="stylesheet" href="assets/css/risk-matrix.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
-    <link rel="stylesheet" href="assets/css/warnings.css">
     
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <!-- Sistema de avisos unificado - apenas um será exibido de cada vez -->
-    <div class="warnings-container">
-        <!-- Aviso de protocolo File -->
-        <div class="warning file-protocol-warning" id="local-warning" style="display: none;">
-            <strong>Aviso de acesso local:</strong> Para melhor experiência, acesse este relatório através de um servidor HTTP local. Use <code>python -m http.server 8000</code> ou <code>npx serve</code> e acesse via http://localhost:8000.
-        </div>
-        
-        <!-- Aviso GitHub Pages -->
-        <div class="warning github-pages-warning" id="github-warning" style="display: none;">
-            <strong>Modo GitHub Pages:</strong> Você está visualizando uma versão hospedada no GitHub Pages. Algumas adaptações foram aplicadas para garantir compatibilidade neste ambiente.
-        </div>
+    <!-- Aviso GitHub Pages -->
+    <div class="github-notice" id="github-notice" style="display: none;">
+        Você está visualizando este relatório no GitHub Pages.
     </div>
     
     <div class="app-container">
@@ -148,40 +109,38 @@
         
         <!-- Conteúdo principal -->
         <main class="main-content">
-            <!-- Cabeçalho do site -->
-            <div id="header-container"></div>
-            
             <!-- Área de carregamento de conteúdo -->
-            <div id="content-loader">
-                <div class="loading-indicator">
-                    <div class="spinner"></div>
-                    <p>Carregando conteúdo...</p>
-                </div>
-                
-                <!-- Mensagem informativa para acessos via protocolo file:// -->
-                <div class="important-notice" id="file-protocol-notice" style="display: none;">
-                    <h4>Atenção: Modo de Acesso por Arquivo Local Detectado</h4>
-                    <p>Este relatório está sendo acessado diretamente pelo sistema de arquivos (protocolo file://), o que pode limitar algumas funcionalidades. Para uma experiência completa, recomendamos o uso de um servidor HTTP local:</p>
-                    <pre>
-# Python (Recomendado)
-python -m http.server 8000
-
-# OU Node.js
-npx serve
-
-# OU PHP
-php -S localhost:8000
-                    </pre>
-                    <p>Depois acesse: <strong>http://localhost:8000</strong> em seu navegador.</p>
-                </div>
-                
-                <!-- Placeholders para cada seção - conteúdo será carregado dos arquivos em content/ -->
+            <div id="content-container">
                 <!-- Sumário Executivo -->
                 <section class="content-section" id="sumario-executivo" style="display: none;">
                     <div class="section__header">
                         <h1 class="section__title">Sumário Executivo</h1>
                     </div>
-                    <div class="section-content-placeholder"></div>
+                    <div class="section-content">
+                        <div class="content-card content-card--highlight">
+                            <div class="content-card__header">
+                                <h2 class="content-card__title">Visão Geral</h2>
+                            </div>
+                            <div class="content-card__body">
+                                <p>Este relatório apresenta uma análise estratégica do mercado brasileiro de semijoias para a entrada da marca Amica, identificando oportunidades de negócio, perfil do público-alvo e estratégias de comercialização.</p>
+                                <p>A Amica busca se posicionar como uma marca de semijoias premium com foco em sustentabilidade e design contemporâneo, atendendo mulheres modernas que buscam acessórios de qualidade com propósito.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="content-card">
+                            <div class="content-card__header">
+                                <h2 class="content-card__title">Principais Insights</h2>
+                            </div>
+                            <div class="content-card__body">
+                                <ul>
+                                    <li>O mercado brasileiro de semijoias cresce a uma taxa anual de 8,5%, com projeção de atingir R$ 12 bilhões até 2025</li>
+                                    <li>Consumidoras na faixa de 25-40 anos representam 65% do público-alvo, com preferência por compras online</li>
+                                    <li>Marcas com propósito e sustentabilidade têm conquistado market share significativo nos últimos 3 anos</li>
+                                    <li>A combinação de marketplace e e-commerce próprio oferece o melhor modelo para entrada no mercado</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </section>
                 
                 <!-- Análise de Mercado -->
@@ -189,7 +148,69 @@ php -S localhost:8000
                     <div class="section__header">
                         <h1 class="section__title">Análise do Mercado de Semijoias</h1>
                     </div>
-                    <div class="section-content-placeholder"></div>
+                    <div class="section-content">
+                        <div class="content-card">
+                            <div class="content-card__header">
+                                <h2 class="content-card__title">Panorama do Mercado</h2>
+                            </div>
+                            <div class="content-card__body">
+                                <p>O mercado brasileiro de semijoias está em constante crescimento, impulsionado pelo aumento do poder aquisitivo da classe média e pela busca por acessórios que aliem qualidade, design e preço acessível.</p>
+                                
+                                <div class="chart-container">
+                                    <canvas id="marketGrowthChart" 
+                                            data-chart-type="line"
+                                            data-chart-data='{"labels":["2018","2019","2020","2021","2022","2023"],"datasets":[{"label":"Faturamento (R$ bilhões)","data":[4.8,5.3,5.1,6.4,7.2,8.1],"borderColor":"#A67C52","backgroundColor":"rgba(166,124,82,0.1)"}]}'
+                                            data-chart-options='{"responsive":true,"maintainAspectRatio":false}'></canvas>
+                                </div>
+                                
+                                <h3>Principais Tendências</h3>
+                                <ul>
+                                    <li><strong>Sustentabilidade:</strong> Crescente demanda por produtos com práticas sustentáveis</li>
+                                    <li><strong>Personalização:</strong> Consumidores buscam peças que expressem sua individualidade</li>
+                                    <li><strong>Omnicanalidade:</strong> Integração entre experiências online e físicas</li>
+                                    <li><strong>Propósito de marca:</strong> Conexão com causas sociais e ambientais</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="content-card">
+                            <div class="content-card__header">
+                                <h2 class="content-card__title">Segmentação de Mercado</h2>
+                            </div>
+                            <div class="content-card__body">
+                                <p>O mercado brasileiro de semijoias pode ser segmentado em diferentes categorias, cada uma com características e oportunidades específicas:</p>
+                                
+                                <div class="table-container">
+                                    <table class="table table--striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Segmento</th>
+                                                <th>Participação</th>
+                                                <th>Características</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Premium</td>
+                                                <td>25%</td>
+                                                <td>Design exclusivo, materiais de alta qualidade, foco em experiência</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Intermediário</td>
+                                                <td>45%</td>
+                                                <td>Boa relação custo-benefício, designs contemporâneos</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Entrada</td>
+                                                <td>30%</td>
+                                                <td>Preços acessíveis, designs básicos, alta rotatividade</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </section>
                 
                 <!-- Análise de Concorrência -->
@@ -197,79 +218,185 @@ php -S localhost:8000
                     <div class="section__header">
                         <h1 class="section__title">Análise de Concorrência</h1>
                     </div>
-                    <div class="section-content-placeholder"></div>
+                    <div class="section-content">
+                        <div class="content-card">
+                            <div class="content-card__header">
+                                <h2 class="content-card__title">Principais Concorrentes</h2>
+                            </div>
+                            <div class="content-card__body">
+                                <p>A análise dos principais players do mercado de semijoias nos permite identificar estratégias bem-sucedidas e oportunidades para diferenciação da marca Amica.</p>
+                                
+                                <div class="table-container">
+                                    <table class="table table--striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Marca</th>
+                                                <th>Posicionamento</th>
+                                                <th>Pontos Fortes</th>
+                                                <th>Pontos Fracos</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Rommanel</td>
+                                                <td>Tradicional</td>
+                                                <td>Ampla distribuição, reconhecimento de marca</td>
+                                                <td>Design conservador, baixa presença digital</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Vivara Life</td>
+                                                <td>Premium</td>
+                                                <td>Força da marca principal, qualidade superior</td>
+                                                <td>Preço elevado, menos acessível</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Francisca Joias</td>
+                                                <td>Contemporâneo</td>
+                                                <td>Design moderno, forte presença digital</td>
+                                                <td>Distribuição limitada, menor variedade</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Luiza Dias</td>
+                                                <td>Sustentável</td>
+                                                <td>Foco em sustentabilidade, produção artesanal</td>
+                                                <td>Escala limitada, preços mais altos</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="content-card">
+                            <div class="content-card__header">
+                                <h2 class="content-card__title">Análise SWOT do Mercado</h2>
+                            </div>
+                            <div class="content-card__body">
+                                <div class="grid grid--2cols">
+                                    <div class="grid-item">
+                                        <h3>Forças</h3>
+                                        <ul>
+                                            <li>Crescimento constante do mercado</li>
+                                            <li>Alto valor percebido das semijoias</li>
+                                            <li>Margens de lucro atrativas</li>
+                                            <li>Possibilidade de renovação frequente de coleções</li>
+                                        </ul>
+                                    </div>
+                                    <div class="grid-item">
+                                        <h3>Fraquezas</h3>
+                                        <ul>
+                                            <li>Alta concorrência em segmentos específicos</li>
+                                            <li>Dependência de fornecedores para matéria-prima</li>
+                                            <li>Necessidade de investimento constante em tendências</li>
+                                            <li>Desafios logísticos para entrega nacional</li>
+                                        </ul>
+                                    </div>
+                                    <div class="grid-item">
+                                        <h3>Oportunidades</h3>
+                                        <ul>
+                                            <li>Crescente interesse por marcas com propósito</li>
+                                            <li>Expansão do e-commerce no segmento</li>
+                                            <li>Parcerias com influenciadores digitais</li>
+                                            <li>Exploração de nichos específicos ainda não atendidos</li>
+                                        </ul>
+                                    </div>
+                                    <div class="grid-item">
+                                        <h3>Ameaças</h3>
+                                        <ul>
+                                            <li>Instabilidade econômica e flutuação cambial</li>
+                                            <li>Entrada de novos concorrentes</li>
+                                            <li>Mudanças rápidas nas tendências de moda</li>
+                                            <li>Pressão de preços por grandes varejistas</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </section>
                 
-                <!-- Público-Alvo -->
+                <!-- Incluir seções adicionais aqui... -->
+                
+                <!-- Seções restantes seriam adicionadas com conteúdo real seguindo o mesmo padrão -->
                 <section class="content-section" id="publico-alvo" style="display: none;">
                     <div class="section__header">
                         <h1 class="section__title">Público-Alvo</h1>
                     </div>
-                    <div class="section-content-placeholder"></div>
+                    <div class="section-content">
+                        <p>Conteúdo do Público-Alvo será adicionado aqui.</p>
+                    </div>
                 </section>
                 
-                <!-- Precificação e Custos -->
                 <section class="content-section" id="precificacao-custos" style="display: none;">
                     <div class="section__header">
                         <h1 class="section__title">Precificação e Custos</h1>
                     </div>
-                    <div class="section-content-placeholder"></div>
+                    <div class="section-content">
+                        <p>Conteúdo de Precificação e Custos será adicionado aqui.</p>
+                    </div>
                 </section>
                 
-                <!-- Marketplaces -->
                 <section class="content-section" id="marketplaces" style="display: none;">
                     <div class="section__header">
                         <h1 class="section__title">Marketplaces</h1>
                     </div>
-                    <div class="section-content-placeholder"></div>
+                    <div class="section-content">
+                        <p>Conteúdo de Marketplaces será adicionado aqui.</p>
+                    </div>
                 </section>
                 
-                <!-- E-commerce Próprio -->
                 <section class="content-section" id="ecommerce-proprio" style="display: none;">
                     <div class="section__header">
                         <h1 class="section__title">E-commerce Próprio</h1>
                     </div>
-                    <div class="section-content-placeholder"></div>
+                    <div class="section-content">
+                        <p>Conteúdo de E-commerce Próprio será adicionado aqui.</p>
+                    </div>
                 </section>
                 
-                <!-- Redes Sociais -->
                 <section class="content-section" id="redes-sociais" style="display: none;">
                     <div class="section__header">
                         <h1 class="section__title">Redes Sociais</h1>
                     </div>
-                    <div class="section-content-placeholder"></div>
+                    <div class="section-content">
+                        <p>Conteúdo de Redes Sociais será adicionado aqui.</p>
+                    </div>
                 </section>
                 
-                <!-- Fidelização de Clientes -->
                 <section class="content-section" id="fidelizacao-clientes" style="display: none;">
                     <div class="section__header">
                         <h1 class="section__title">Fidelização de Clientes</h1>
                     </div>
-                    <div class="section-content-placeholder"></div>
+                    <div class="section-content">
+                        <p>Conteúdo de Fidelização de Clientes será adicionado aqui.</p>
+                    </div>
                 </section>
                 
-                <!-- Plano de Expansão -->
                 <section class="content-section" id="plano-expansao" style="display: none;">
                     <div class="section__header">
                         <h1 class="section__title">Plano de Expansão</h1>
                     </div>
-                    <div class="section-content-placeholder"></div>
+                    <div class="section-content">
+                        <p>Conteúdo de Plano de Expansão será adicionado aqui.</p>
+                    </div>
                 </section>
                 
-                <!-- Análise de Riscos -->
                 <section class="content-section" id="analise-riscos" style="display: none;">
                     <div class="section__header">
                         <h1 class="section__title">Análise de Riscos</h1>
                     </div>
-                    <div class="section-content-placeholder"></div>
+                    <div class="section-content">
+                        <p>Conteúdo de Análise de Riscos será adicionado aqui.</p>
+                    </div>
                 </section>
                 
-                <!-- Conclusão e Recomendações -->
                 <section class="content-section" id="conclusao-recomendacoes" style="display: none;">
                     <div class="section__header">
                         <h1 class="section__title">Conclusão e Recomendações</h1>
                     </div>
-                    <div class="section-content-placeholder"></div>
+                    <div class="section-content">
+                        <p>Conteúdo de Conclusão e Recomendações será adicionado aqui.</p>
+                    </div>
                 </section>
             </div>
             
@@ -284,11 +411,8 @@ php -S localhost:8000
         </main>
     </div>
     
-    <!-- Scripts -->
+    <!-- Scripts - Simplificado para um único script principal -->
     <script src="assets/js/main.js"></script>
     <script src="assets/js/charts.js"></script>
-    <script src="assets/js/risk-matrix.js"></script>
-    <script src="assets/js/timeline.js"></script>
-    <script src="assets/js/github-compatibility.js"></script>
 </body>
 </html>

@@ -415,3 +415,23 @@ O JavaScript (main.js) irá exibi-los se necessário.
 .important-notice {
   display: none;
 }
+
+/* GitHub Pages Notice */
+.github-notice {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: 8px 16px;
+  background-color: rgba(52, 152, 219, 0.9);
+  color: white;
+  z-index: 1000;
+  font-size: 14px;
+  font-family: var(--font-secondary);
+}
+
+/* Adicionar padding ao body quando o aviso está visível */
+body:has(.github-notice[style="display: block;"]) {
+  padding-top: 40px;
+}
