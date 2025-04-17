@@ -414,76 +414,99 @@ const AMICA = {
         if (typeof AmicaCharts !== 'undefined' && AmicaCharts.utils) {
           console.log(`[${sectionElement.id}] Usando AmicaCharts para criar gráfico ${chartId}`);
           
-          // Solução direta - aplicar cores e estilos manualmente
+          // Obter cores das variáveis CSS
+          const chartColors = [];
+          for (let i = 1; i <= 8; i++) {
+            const colorVar = getComputedStyle(document.documentElement).getPropertyValue(`--color-chart-${i}`).trim();
+            if (colorVar) chartColors.push(colorVar);
+          }
+          
+          // Usar cores padrão se não conseguir obter do CSS
+          const fallbackColors = [
+            '#f8f26a', // --color-primary
+            '#2A4B45', // --color-secondary
+            '#A67C52', // --color-accent1
+            '#6B8E8A', // --color-accent2
+            '#D9C2A7', // --color-tertiary
+            '#E8B478', // --color-accent3
+            '#e0d938', // --color-primary-dark
+            '#3D6A61'  // --color-secondary-light
+          ];
+          
+          // Usar as cores do CSS ou fallback
+          const colorPalette = chartColors.length > 0 ? chartColors : fallbackColors;
+          
+          // Diferentes transparências para diferentes tipos de gráficos
+          const alphaByType = {
+            'pie': 0.8,
+            'doughnut': 0.8,
+            'bar': 0.7,
+            'line': 0.2,
+            'radar': 0.2
+          };
+          
+          const alpha = alphaByType[config.type] || 0.7;
+          
+          // Aplicar cores consistentemente
           if (config.type === 'pie' || config.type === 'doughnut') {
-            // Cores para gráficos de pizza/rosca
-            const vibrantPalette = [
-              'rgba(255, 99, 132, 0.8)',    // Rosa
-              'rgba(54, 162, 235, 0.8)',    // Azul
-              'rgba(255, 206, 86, 0.8)',    // Amarelo
-              'rgba(75, 192, 192, 0.8)',    // Verde-água
-              'rgba(153, 102, 255, 0.8)',   // Roxo
-              'rgba(255, 159, 64, 0.8)',    // Laranja
-              'rgba(46, 204, 113, 0.8)',    // Verde
-              'rgba(52, 152, 219, 0.8)'     // Azul claro
-            ];
-            
-            config.data.datasets.forEach(function(dataset) {
+            config.data.datasets.forEach(dataset => {
               const bgColors = [];
               const borderColors = [];
               
-              for (let i = 0; i < dataset.data.length; i++) {
-                bgColors.push(vibrantPalette[i % vibrantPalette.length]);
-                borderColors.push(vibrantPalette[i % vibrantPalette.length].replace('0.8', '1'));
+              for (let j = 0; j < dataset.data.length; j++) {
+                const colorIdx = j % colorPalette.length;
+                const color = colorPalette[colorIdx];
+                
+                // Converter hex para rgba se necessário
+                let bgColor = color;
+                if (color.startsWith('#')) {
+                  const r = parseInt(color.slice(1, 3), 16);
+                  const g = parseInt(color.slice(3, 5), 16);
+                  const b = parseInt(color.slice(5, 7), 16);
+                  bgColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                }
+                
+                bgColors.push(bgColor);
+                borderColors.push(color);
               }
               
               dataset.backgroundColor = bgColors;
               dataset.borderColor = borderColors;
-              dataset.borderWidth = dataset.borderWidth || 2;
+              dataset.borderWidth = 1.5;
               dataset.hoverOffset = 15;
             });
-            
-            // Ajustes para mobile
-            if (window.innerWidth < 768) {
-              config.options = config.options || {};
-              config.options.plugins = config.options.plugins || {};
-              config.options.plugins.legend = config.options.plugins.legend || {};
-              config.options.plugins.legend.position = 'bottom';
-            }
           } else {
-            // Para outros tipos de gráficos
-            const palette = AmicaCharts.utils.getColorPalette ? 
-                           AmicaCharts.utils.getColorPalette() : 
-                           [
-                             'rgb(166, 124, 82)',  // marrom
-                             'rgb(42, 75, 69)',    // verde escuro
-                             'rgb(217, 194, 167)', // bege
-                             'rgb(101, 142, 133)', // verde médio
-                             'rgb(191, 172, 143)'  // bege escuro
-                           ];
-                           
-            config.data.datasets.forEach(function(dataset, i) {
-              const baseColor = palette[i % palette.length];
+            // Para outros gráficos (barras, linhas, radar)
+            config.data.datasets.forEach((dataset, i) => {
+              const colorIdx = i % colorPalette.length;
+              const color = colorPalette[colorIdx];
               
-              if (config.type === 'bar') {
-                dataset.backgroundColor = AmicaCharts.utils.hexToRgba ? 
-                                         AmicaCharts.utils.hexToRgba(baseColor, 0.7) : 
-                                         baseColor;
-                dataset.borderColor = baseColor;
-              } 
-              else if (config.type === 'line') {
-                dataset.backgroundColor = AmicaCharts.utils.hexToRgba ? 
-                                         AmicaCharts.utils.hexToRgba(baseColor, 0.1) : 
-                                         baseColor;
-                dataset.borderColor = baseColor;
+              // Converter hex para rgba para o fundo
+              let bgColor = color;
+              if (color.startsWith('#')) {
+                const r = parseInt(color.slice(1, 3), 16);
+                const g = parseInt(color.slice(3, 5), 16);
+                const b = parseInt(color.slice(5, 7), 16);
+                bgColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
               }
-              else if (config.type === 'radar') {
-                dataset.backgroundColor = AmicaCharts.utils.hexToRgba ? 
-                                         AmicaCharts.utils.hexToRgba(baseColor, 0.2) : 
-                                         baseColor;
-                dataset.borderColor = baseColor;
+              
+              dataset.backgroundColor = bgColor;
+              dataset.borderColor = color;
+              dataset.borderWidth = 1.5;
+              
+              if (config.type === 'line') {
+                dataset.pointBackgroundColor = color;
+                dataset.pointBorderColor = '#fff';
               }
             });
+          }
+          
+          // Ajustes para mobile
+          if (window.innerWidth < 768) {
+            config.options = config.options || {};
+            config.options.plugins = config.options.plugins || {};
+            config.options.plugins.legend = config.options.plugins.legend || {};
+            config.options.plugins.legend.position = 'bottom';
           }
           
           chartCanvas._chart = new Chart(chartCanvas, config);
@@ -491,58 +514,101 @@ const AMICA = {
           console.log(`[${sectionElement.id}] Usando ChartUtils para criar gráfico ${chartId}`);
           chartCanvas._chart = ChartUtils.createChart(chartId, config);
         } else {
-          console.log(`[${sectionElement.id}] Usando Chart.js diretamente para criar gráfico ${chartId} (aplicando cores básicas)`);
+          console.log(`[${sectionElement.id}] Usando Chart.js diretamente para criar gráfico ${chartId} (aplicando cores do tema)`);
           
-          // Solução simples para cores quando AmicaCharts não está disponível
+          // Mesma lógica de cores usada acima - obtendo do CSS
+          const chartColors = [];
+          for (let i = 1; i <= 8; i++) {
+            const colorVar = getComputedStyle(document.documentElement).getPropertyValue(`--color-chart-${i}`).trim();
+            if (colorVar) chartColors.push(colorVar);
+          }
+          
+          // Usar cores padrão se não conseguir obter do CSS
+          const fallbackColors = [
+            '#f8f26a', // --color-primary
+            '#2A4B45', // --color-secondary
+            '#A67C52', // --color-accent1
+            '#6B8E8A', // --color-accent2
+            '#D9C2A7', // --color-tertiary
+            '#E8B478', // --color-accent3
+            '#e0d938', // --color-primary-dark
+            '#3D6A61'  // --color-secondary-light
+          ];
+          
+          // Usar as cores do CSS ou fallback
+          const colorPalette = chartColors.length > 0 ? chartColors : fallbackColors;
+          
+          // Diferentes transparências para diferentes tipos de gráficos
+          const alphaByType = {
+            'pie': 0.8,
+            'doughnut': 0.8,
+            'bar':.7,
+            'line': 0.2,
+            'radar': 0.2
+          };
+          
+          const alpha = alphaByType[config.type] || 0.7;
+          
+          // Aplicar cores consistentemente
           if (config.type === 'pie' || config.type === 'doughnut') {
-            // Cores para gráficos de pizza/rosca
-            const pieColors = [
-              'rgba(255, 99, 132, 0.8)',    // Rosa
-              'rgba(54, 162, 235, 0.8)',    // Azul
-              'rgba(255, 206, 86, 0.8)',    // Amarelo
-              'rgba(75, 192, 192, 0.8)',    // Verde-água
-              'rgba(153, 102, 255, 0.8)',   // Roxo
-              'rgba(255, 159, 64, 0.8)',    // Laranja
-              'rgba(46, 204, 113, 0.8)',    // Verde
-              'rgba(52, 152, 219, 0.8)'     // Azul claro
-            ];
-            
             config.data.datasets.forEach(dataset => {
               const bgColors = [];
               const borderColors = [];
               
-              for (let i = 0; i < dataset.data.length; i++) {
-                bgColors.push(pieColors[i % pieColors.length]);
-                borderColors.push(pieColors[i % pieColors.length].replace('0.8', '1'));
+              for (let j = 0; j < dataset.data.length; j++) {
+                const colorIdx = j % colorPalette.length;
+                const color = colorPalette[colorIdx];
+                
+                // Converter hex para rgba se necessário
+                let bgColor = color;
+                if (color.startsWith('#')) {
+                  const r = parseInt(color.slice(1, 3), 16);
+                  const g = parseInt(color.slice(3, 5), 16);
+                  const b = parseInt(color.slice(5, 7), 16);
+                  bgColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                }
+                
+                bgColors.push(bgColor);
+                borderColors.push(color);
               }
               
               dataset.backgroundColor = bgColors;
               dataset.borderColor = borderColors;
-              dataset.borderWidth = 2;
+              dataset.borderWidth = 1.5;
+              dataset.hoverOffset = 15;
             });
           } else {
-            // Cores para outros gráficos (barras, linhas, radar)
-            const defaultColors = [
-              'rgba(166, 124, 82, 0.7)',   // Marrom
-              'rgba(42, 75, 69, 0.7)',     // Verde escuro
-              'rgba(101, 142, 133, 0.7)',  // Verde médio
-              'rgba(217, 194, 167, 0.7)',  // Bege
-              'rgba(191, 172, 143, 0.7)'   // Bege escuro
-            ];
-            
+            // Para outros gráficos (barras, linhas, radar)
             config.data.datasets.forEach((dataset, i) => {
-              const color = defaultColors[i % defaultColors.length];
-              const borderColor = color.replace('0.7', '1');
+              const colorIdx = i % colorPalette.length;
+              const color = colorPalette[colorIdx];
               
-              if (config.type === 'radar') {
-                dataset.backgroundColor = color.replace('0.7', '0.2');
-              } else {
-                dataset.backgroundColor = color;
+              // Converter hex para rgba para o fundo
+              let bgColor = color;
+              if (color.startsWith('#')) {
+                const r = parseInt(color.slice(1, 3), 16);
+                const g = parseInt(color.slice(3, 5), 16);
+                const b = parseInt(color.slice(5, 7), 16);
+                bgColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
               }
               
-              dataset.borderColor = borderColor;
-              dataset.borderWidth = 1;
+              dataset.backgroundColor = bgColor;
+              dataset.borderColor = color;
+              dataset.borderWidth = 1.5;
+              
+              if (config.type === 'line') {
+                dataset.pointBackgroundColor = color;
+                dataset.pointBorderColor = '#fff';
+              }
             });
+          }
+          
+          // Ajustes para mobile
+          if (window.innerWidth < 768) {
+            config.options = config.options || {};
+            config.options.plugins = config.options.plugins || {};
+            config.options.plugins.legend = config.options.plugins.legend || {};
+            config.options.plugins.legend.position = 'bottom';
           }
           
           chartCanvas._chart = new Chart(chartCanvas, config);
