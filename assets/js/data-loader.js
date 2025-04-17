@@ -70,12 +70,12 @@ function initializeContentLoader() {
 function manageFileProtocolNotice() {
   if (!fileProtocolNotice) return;
   
-  if (appState.isFileProtocol) {
+  if (appState.isFileProtocol && !appState.isGitHubPages) {
     fileProtocolNotice.style.display = 'block';
     if (appState.debug) console.log('Protocolo file:// detectado, exibindo aviso');
   } else {
     fileProtocolNotice.style.display = 'none';
-    if (appState.debug) console.log('Protocolo HTTP detectado, ocultando aviso');
+    if (appState.debug) console.log('Protocolo HTTP detectado ou estamos no GitHub Pages, ocultando aviso');
   }
 }
 

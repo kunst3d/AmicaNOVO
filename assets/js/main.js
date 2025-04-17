@@ -68,7 +68,7 @@ const AMICA = {
   // Verificar ambiente de execução
   checkEnvironment: function() {
     // Verificar se está sendo acessado via protocolo file://
-    if (this.state.isFileProtocol) {
+    if (this.state.isFileProtocol && !this.state.isGitHubPages) {
       console.warn('Aviso: Este relatório está sendo acessado via protocolo file://. ' +
                    'Algumas funcionalidades, como carregamento dinâmico de conteúdo, podem não funcionar corretamente. ' +
                    'Recomendamos o uso de um servidor HTTP local.');
@@ -87,23 +87,35 @@ const AMICA = {
     if (this.state.isGitHubPages) {
       document.body.classList.add('is-github-pages');
       if (this.config.debugMode) console.log('GitHub Pages detectado, modo de compatibilidade será aplicado');
+      
+      // Quando estamos no GitHub Pages, esconder o aviso de protocolo file
+      const fileProtocolWarning = document.querySelector('.file-protocol-warning');
+      if (fileProtocolWarning) {
+        fileProtocolWarning.style.display = 'none';
+      }
+      
+      // Esconder também o aviso importante
+      const importantNotice = document.querySelector('.important-notice');
+      if (importantNotice) {
+        importantNotice.style.display = 'none';
+      }
     }
   },
   
   // Configurar compatibilidade com protocolo file://
   setupFileProtocolCompatibility: function() {
-    // Se já foi consertado, não fazer novamente
-    if (this.state.hasFixedFileProtocolIssue) return;
+    // Se já foi consertado ou estamos no GitHub Pages, não fazer novamente
+    if (this.state.hasFixedFileProtocolIssue || this.state.isGitHubPages) return;
     
-    // Mostrar aviso de protocolo file://
+    // Mostrar aviso de protocolo file:// apenas se não estiver no GitHub Pages
     const fileProtocolWarning = document.querySelector('.file-protocol-warning');
-    if (fileProtocolWarning) {
+    if (fileProtocolWarning && !this.state.isGitHubPages) {
       fileProtocolWarning.style.display = 'block';
     }
     
-    // Mostrar aviso de importante
+    // Mostrar aviso importante apenas se não estiver no GitHub Pages
     const importantNotice = document.querySelector('.important-notice');
-    if (importantNotice) {
+    if (importantNotice && !this.state.isGitHubPages) {
       importantNotice.style.display = 'block';
     }
     

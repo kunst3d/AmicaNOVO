@@ -18,6 +18,19 @@ document.addEventListener('DOMContentLoaded', function() {
   // Adiciona classe ao body para aplicar estilos específicos
   document.body.classList.add('github-pages-mode');
   
+  // Oculta explicitamente os avisos de protocolo file://
+  const fileProtocolWarning = document.querySelector('.file-protocol-warning');
+  if (fileProtocolWarning) {
+    fileProtocolWarning.style.display = 'none';
+    if (debug) console.log('GitHub Pages: Ocultando aviso de protocolo file://');
+  }
+  
+  const importantNotice = document.querySelector('.important-notice');
+  if (importantNotice) {
+    importantNotice.style.display = 'none';
+    if (debug) console.log('GitHub Pages: Ocultando aviso importante de acesso local');
+  }
+  
   // Mapeia as seções para os arquivos HTML correspondentes
   const sectionContentMapping = {
     'sumario-executivo': 'content/sumario-executivo.html',
