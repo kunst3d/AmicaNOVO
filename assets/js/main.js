@@ -32,6 +32,9 @@ const AMICA = {
       document.getElementById('local-notice').style.display = 'block';
     }
     
+    // Adicionar meta tag de codificação UTF-8 se não existir
+    this.ensureUtf8Encoding();
+    
     // Inicializar navegação simples (sem AJAX)
     this.setupDirectNavigation();
     
@@ -60,6 +63,33 @@ const AMICA = {
         document.head.appendChild(baseTag);
         console.log(`Base href configurada para: /${repoName}/`);
       }
+    }
+  },
+  
+  // Garantir que a codificação UTF-8 esteja definida
+  ensureUtf8Encoding: function() {
+    // Verificar se já existe meta tag charset
+    let charsetMeta = document.querySelector('meta[charset]');
+    
+    // Se não existir, criar uma
+    if (!charsetMeta) {
+      charsetMeta = document.createElement('meta');
+      charsetMeta.setAttribute('charset', 'UTF-8');
+      document.head.insertBefore(charsetMeta, document.head.firstChild);
+    } else {
+      // Garantir que seja UTF-8
+      charsetMeta.setAttribute('charset', 'UTF-8');
+    }
+    
+    // Verificar também http-equiv Content-Type
+    let contentTypeMeta = document.querySelector('meta[http-equiv="Content-Type"]');
+    if (!contentTypeMeta) {
+      contentTypeMeta = document.createElement('meta');
+      contentTypeMeta.setAttribute('http-equiv', 'Content-Type');
+      contentTypeMeta.setAttribute('content', 'text/html; charset=utf-8');
+      document.head.insertBefore(contentTypeMeta, document.head.firstChild);
+    } else {
+      contentTypeMeta.setAttribute('content', 'text/html; charset=utf-8');
     }
   },
   
@@ -119,11 +149,82 @@ const AMICA = {
       if (placeholder) {
         placeholder.innerHTML = `
           <div class="content-card">
-            <h2>Seção ${section.id}</h2>
-            <p>Este é um conteúdo temporário para a seção ${section.id}.</p>
-            <p>Em uma implementação completa, o conteúdo seria carregado do arquivo content/${section.id}.html.</p>
+            <h2>Carregando seção ${section.id}...</h2>
+            <p>O conteúdo está sendo carregado do arquivo content/${section.id}.html.</p>
+            <div class="loader">
+              <div class="loader__spinner"></div>
+            </div>
           </div>
         `;
+        
+        // Carregar o conteúdo real para cada seção
+        this.loadSectionContent(section.id, placeholder);
+      }
+    });
+  },
+  
+  // Carregar conteúdo de uma seção a partir do arquivo HTML
+  loadSectionContent: function(sectionId, placeholder) {
+    // Caminho para o arquivo HTML
+    const filePath = `content/${sectionId}.html`;
+    
+    fetch(filePath, {
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8'
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Erro ao carregar ${filePath}: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(htmlContent => {
+      // Inserir o conteúdo no placeholder
+      placeholder.innerHTML = htmlContent;
+      console.log(`Seção ${sectionId} carregada com sucesso.`);
+      
+      // Inicializar gráficos se houver
+      this.initCharts(placeholder);
+    })
+    .catch(error => {
+      console.error(`Erro ao carregar seção ${sectionId}:`, error);
+      placeholder.innerHTML = `
+        <div class="error-message">
+          <h2>Erro ao carregar conteúdo</h2>
+          <p>${error.message}</p>
+          <p>Tente recarregar a página ou acessar através de um servidor web local.</p>
+        </div>
+      `;
+    });
+  },
+  
+  // Inicializar gráficos se houver
+  initCharts: function(container) {
+    if (typeof Chart === 'undefined') return;
+    
+    // Procurar por gráficos para inicializar
+    const chartDataElements = container.querySelectorAll('.chart-data');
+    chartDataElements.forEach(dataElement => {
+      try {
+        const chartId = dataElement.getAttribute('data-chart');
+        const chartType = dataElement.getAttribute('data-type');
+        const chartCanvas = document.getElementById(chartId);
+        
+        if (chartCanvas) {
+          const chartData = JSON.parse(dataElement.textContent);
+          new Chart(chartCanvas, {
+            type: chartType,
+            data: chartData,
+            options: {
+              responsive: true,
+              maintainAspectRatio: true
+            }
+          });
+          console.log(`Gráfico ${chartId} inicializado`);
+        }
+      } catch (error) {
+        console.error('Erro ao inicializar gráfico:', error);
       }
     });
   },
