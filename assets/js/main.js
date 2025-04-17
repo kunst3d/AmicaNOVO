@@ -41,6 +41,40 @@ const ChartUtils = {
     // Aplicar paleta com mais refinamento
     applyPalette: function(datasets, chartType) {
         const palette = this.getColorPalette();
+        
+        // Tratamento especial para gráficos de pizza/rosca
+        if (['pie', 'doughnut'].includes(chartType)) {
+            console.log(`Aplicando cores para gráfico ${chartType}, datasets:`, datasets);
+            
+            // Caso 1: Único dataset (mais comum em pizza/rosca)
+            if (datasets.length === 1) {
+                const dataset = datasets[0];
+                // Sempre sobrescrever backgroundColor para garantir aplicação das cores
+                dataset.backgroundColor = dataset.data.map((_, dataIndex) => 
+                    palette[dataIndex % palette.length]
+                );
+                // Bordas em branco para destacar as seções
+                dataset.borderColor = dataset.borderColor || '#fff';
+                dataset.borderWidth = dataset.borderWidth ?? 1;
+                // Ajuste do hover
+                dataset.hoverBackgroundColor = dataset.data.map((_, dataIndex) => palette[dataIndex % palette.length]);
+                dataset.hoverOffset = dataset.hoverOffset ?? 10;
+                console.log(`Cores aplicadas ao dataset único: ${dataset.backgroundColor.join(', ')}`);
+                return; // Retorna após processar o caso especial
+            }
+            
+            // Caso 2: Múltiplos datasets (menos comum, mas possível)
+            datasets.forEach((dataset, datasetIndex) => {
+                const color = palette[datasetIndex % palette.length];
+                dataset.backgroundColor = dataset.backgroundColor || color;
+                dataset.borderColor = dataset.borderColor || '#fff';
+                dataset.borderWidth = dataset.borderWidth ?? 1;
+                console.log(`Cor aplicada ao dataset ${datasetIndex}: ${dataset.backgroundColor}`);
+            });
+            return; // Retorna após processar o caso especial
+        }
+        
+        // Processamento padrão para outros tipos de gráficos
         datasets.forEach((dataset, index) => {
             const colorIndex = index % palette.length;
             const mainColor = palette[colorIndex];
@@ -53,10 +87,26 @@ const ChartUtils = {
                     dataset.backgroundColor = this.hexToRgba(mainColor, 0.15); // Muito sutil
                     dataset.fill = true;
                 } else if (chartType === 'bar') {
-                    dataset.backgroundColor = this.hexToRgba(mainColor, 0.75); // Barras mais sólidas
-                } else if (['pie', 'doughnut'].includes(chartType)) {
-                    dataset.backgroundColor = dataset.data.map((_, dataIndex) => palette[dataIndex % palette.length]);
-                    dataset.hoverOffset = dataset.hoverOffset ?? 8;
+                    // Para gráficos de barras, aplicar cores diferentes para cada barra
+                    // dependendo se estamos lidando com barras horizontais ou verticais
+                    if (dataset.data && Array.isArray(dataset.data)) {
+                        if (!Array.isArray(dataset.backgroundColor)) {
+                            // Se temos múltiplas barras e não foi definido um array de cores, criar um
+                            const backgroundColors = dataset.data.map((_, i) => 
+                                this.hexToRgba(palette[i % palette.length], 0.7));
+                            dataset.backgroundColor = backgroundColors;
+                            
+                            // Adicionar cores de borda para cada barra
+                            const borderColors = dataset.data.map((_, i) => 
+                                palette[i % palette.length]);
+                            dataset.borderColor = borderColors;
+                        }
+                    } else {
+                        // Fallback para comportamento padrão
+                        dataset.backgroundColor = dataset.backgroundColor || this.hexToRgba(mainColor, 0.7);
+                        dataset.borderColor = dataset.borderColor || mainColor;
+                    }
+                    dataset.borderWidth = dataset.borderWidth ?? 1;
                 } else {
                     dataset.backgroundColor = mainColor;
                 }
@@ -76,9 +126,14 @@ const ChartUtils = {
                 dataset.borderWidth = dataset.borderWidth ?? 0;
             }
             if (chartType === 'radar') {
-                dataset.borderWidth = dataset.borderWidth ?? 1.5;
-                dataset.pointRadius = dataset.pointRadius ?? 2;
-                dataset.pointHoverRadius = dataset.pointHoverRadius ?? 4;
+                dataset.borderWidth = dataset.borderWidth ?? 2; // Linha mais grossa para melhor visibilidade
+                dataset.pointRadius = dataset.pointRadius ?? 3; // Pontos um pouco maiores
+                dataset.pointHoverRadius = dataset.pointHoverRadius ?? 5;
+                // Cores mais sólidas para radar
+                dataset.backgroundColor = dataset.backgroundColor || this.hexToRgba(mainColor, 0.3); // Mais opaco
+                dataset.pointBackgroundColor = dataset.pointBackgroundColor || mainColor;
+                dataset.pointBorderColor = dataset.pointBorderColor || '#fff';
+                dataset.pointBorderWidth = dataset.pointBorderWidth ?? 1.5;
             }
         });
     },
@@ -458,52 +513,30 @@ const AMICA = {
           return;
         }
 
-        // Aplicar paleta de cores aos datasets
-        if (chartConfigData.datasets) {
-            ChartUtils.applyPalette(chartConfigData.datasets, chartType);
-        }
-        
-        // Mesclar opções padrão com opções específicas do gráfico (se houver)
-        // NOTA: Opções específicas no HTML sobrescreverão as padrão.
-        const chartOptions = {
-          ...ChartUtils.getDefaultOptions(), // Começa com as opções padrão
-          ...(chartConfigData.options || {}) // Mescla/sobrescreve com opções do HTML
+        // Criar configuração de gráfico
+        const config = {
+          type: chartType,
+          data: {
+            labels: chartConfigData.labels,
+            datasets: chartConfigData.datasets
+          },
+          options: chartConfigData.options || {}
         };
         
-        // Ajustar opções de escala para tipos específicos (ex: radar)
-        if (chartType === 'radar') {
-            chartOptions.scales = {
-                r: {
-                    angleLines: { color: 'rgba(0, 0, 0, 0.08)' },
-                    grid: { color: 'rgba(0, 0, 0, 0.08)' },
-                    pointLabels: { 
-                        font: { family: ChartUtils.getDefaultOptions().plugins.legend.labels.font.family, size: 11 },
-                        color: ChartUtils.getDefaultOptions().plugins.legend.labels.color
-                    },
-                    ticks: { 
-                        backdropColor: 'transparent',
-                        color: ChartUtils.getDefaultOptions().plugins.legend.labels.color,
-                        font: { size: 10 }
-                    }
-                }
-            }
-        } else if (chartType === 'pie' || chartType === 'doughnut') {
-            // Remove escalas para gráficos de pizza/rosca
-            delete chartOptions.scales;
-        }
-
+        // Destruir gráfico anterior se existir
         if (chartCanvas._chart) {
-          chartCanvas._chart.destroy(); // Destroi gráfico anterior se existir
+          chartCanvas._chart.destroy();
         }
         
-        chartCanvas._chart = new Chart(chartCanvas, {
-          type: chartType,
-          data: { // Passa labels e datasets separadamente
-              labels: chartConfigData.labels,
-              datasets: chartConfigData.datasets
-          },
-          options: chartOptions // Passa as opções mescladas
-        });
+        // Criar o gráfico usando ChartUtils (se disponível) ou diretamente
+        if (typeof ChartUtils !== 'undefined') {
+          console.log(`[${sectionElement.id}] Usando ChartUtils para criar gráfico ${chartId}`);
+          chartCanvas._chart = ChartUtils.createChart(chartId, config);
+        } else {
+          console.log(`[${sectionElement.id}] Usando Chart.js diretamente para criar gráfico ${chartId}`);
+          chartCanvas._chart = new Chart(chartCanvas, config);
+        }
+        
         console.log(`[${sectionElement.id}] Gráfico ${chartId} inicializado com sucesso`);
       } catch (error) {
         console.error(`[${sectionElement.id}] Erro ao inicializar gráfico #${chartId}:`, error);
