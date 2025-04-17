@@ -38,6 +38,11 @@ const sectionContentMapping = {
 
 // Função para inicializar o carregador de conteúdo
 function initializeContentLoader() {
+  if (appState.isGitHubPages) {
+    if (appState.debug) console.log('GitHub Pages detectado: initializeContentLoader ignorado.');
+    return;
+  }
+
   if (appState.debug) console.log('Inicializando carregador de conteúdo...');
   
   // Capturar elementos do DOM

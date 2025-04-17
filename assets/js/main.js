@@ -32,6 +32,18 @@ const AMICA = {
   init: function() {
     if (this.config.debugMode) console.log('Inicializando Relatório Amica...');
     
+    // ---> ADIÇÃO: Se estiver no GitHub Pages, pular partes da inicialização padrão
+    if (this.state.isGitHubPages) {
+      if (this.config.debugMode) console.log('GitHub Pages detectado: pulando inicialização padrão de eventos/dados em main.js');
+      this.checkEnvironment(); // Ainda checar e adicionar classe
+      this.detectDevice(); // Detectar mobile ainda é útil
+      // NÃO chamar setupEventListeners() nem loadInitialData()
+      document.dispatchEvent(new CustomEvent('amica:init:github')); // Evento específico para GH Pages
+      if (this.config.debugMode) console.log('Inicialização para GitHub Pages concluída em main.js.');
+      return; // Interrompe a inicialização padrão
+    }
+    // <--- FIM DA ADIÇÃO
+    
     // Verificar ambiente
     this.checkEnvironment();
     
