@@ -165,17 +165,25 @@ const AMICA = {
         let decoder;
         let htmlContent;
         
+        console.log(`[${sectionId}] Buffer recebido, verificando bytes...`);
         // Logar os primeiros bytes para diagnóstico
         const firstBytes = new Uint8Array(buffer.slice(0, 4));
-        console.log(`[${sectionId}] Primeiros 4 bytes (hex): ${firstBytes[0].toString(16)}, ${firstBytes[1].toString(16)}, ${firstBytes[2].toString(16)}, ${firstBytes[3].toString(16)}`);
+        let byteString = '';
+        try {
+            byteString = `Bytes (hex): ${firstBytes[0]?.toString(16) ?? 'N/A'} ${firstBytes[1]?.toString(16) ?? 'N/A'} ${firstBytes[2]?.toString(16) ?? 'N/A'} ${firstBytes[3]?.toString(16) ?? 'N/A'}`;
+        } catch (e) {
+            byteString = "Erro ao ler bytes.";
+        }
+        console.log(`[${sectionId}] ${byteString}`);
         
         // Detectar BOM UTF-16 LE (ÿþ - FF FE)
-        if (firstBytes[0] === 0xFF && firstBytes[1] === 0xFE) {
+        if (firstBytes.length >= 2 && firstBytes[0] === 0xFF && firstBytes[1] === 0xFE) {
             console.log(`[${sectionId}] Detectado BOM UTF-16 LE. Decodificando...`);
             // Usar UTF-16 LE e pular os 2 bytes do BOM
             decoder = new TextDecoder('utf-16le');
             htmlContent = decoder.decode(buffer.slice(2));
         } else {
+            console.log(`[${sectionId}] BOM UTF-16 LE não detectado. Prosseguindo com UTF-8.`);
             // Tentar UTF-8 primeiro
             console.log(`[${sectionId}] Tentando decodificar como UTF-8...`);
             decoder = new TextDecoder('utf-8');
