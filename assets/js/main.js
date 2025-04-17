@@ -7,11 +7,6 @@
 const AMICA = {
   // Configurações principais da aplicação
   config: {
-    breakpoints: {
-      mobile: 576,
-      tablet: 992,
-      desktop: 1200
-    },
     mobileBreakpoint: 768,
     tabletBreakpoint: 1024,
     desktopBreakpoint: 1440,
@@ -23,48 +18,49 @@ const AMICA = {
   // Estado da aplicação
   state: {
     currentSection: null,
-    isMobile: window.innerWidth <= AMICA.config.breakpoints.mobile,
-    isTablet: window.innerWidth > AMICA.config.breakpoints.mobile && window.innerWidth <= AMICA.config.breakpoints.tablet,
-    isDesktop: window.innerWidth > AMICA.config.breakpoints.tablet,
+    isMobile: window.innerWidth < 768,
     sectionsLoaded: {},
-    isGitHubPages: false,
-    navOpen: false
+    isGitHubPages: false
   },
   
   // Inicialização da aplicação
   init: function() {
     console.log("Inicializando aplicação...");
     
-    // Oculta todos os avisos inicialmente
-    document.getElementById('github-notice').style.display = 'none';
-    document.getElementById('local-notice').style.display = 'none';
+    // Verificar ambiente
+    this.state.isGitHubPages = this.checkIfGitHubPages();
     
-    // Determina o ambiente e mostra avisos apropriados
-    if (this.checkIfGitHubPages()) {
-      console.log("Executando no GitHub Pages. Ativando modo de compatibilidade.");
-      document.getElementById('github-notice').style.display = 'block';
-      // Em GitHub Pages, carregamos o conteúdo diretamente, sem AJAX
-      this.setupStaticNavigation();
-    } else if (this.isFileProtocol()) {
-      console.log("Protocolo file:// detectado. Exibindo aviso de acesso local.");
-      document.getElementById('local-notice').style.display = 'block';
-      // Para protocolo file://, também usamos navegação estática
-      this.setupStaticNavigation();
-    } else {
-      // Em servidor HTTP normal, usamos carregamento AJAX
-      console.log("Executando em servidor HTTP. Usando navegação dinâmica.");
-      this.setupNavigation();
+    // Oculta todos os avisos inicialmente
+    if (document.getElementById('github-notice')) {
+      document.getElementById('github-notice').style.display = 'none';
     }
     
-    // Configura outros componentes da aplicação
-    window.addEventListener('resize', this.handleResize);
-    this.setupMobileNav();
+    if (document.getElementById('local-notice')) {
+      document.getElementById('local-notice').style.display = 'none';
+    }
     
-    // Inicializa a primeira seção
-    this.loadInitialSection();
+    // Mostrar avisos apropriados
+    if (this.state.isGitHubPages) {
+      console.log("Executando no GitHub Pages");
+      if (document.getElementById('github-notice')) {
+        document.getElementById('github-notice').style.display = 'block';
+      }
+      this.setupBaseHref();
+    } else if (this.isFileProtocol()) {
+      console.log("Protocolo file:// detectado");
+      if (document.getElementById('local-notice')) {
+        document.getElementById('local-notice').style.display = 'block';
+      }
+    }
+    
+    // Inicializar navegação
+    this.setupNavigation();
     
     // Detectar tamanho de tela
     this.detectScreenSize();
+    
+    // Carregar seção inicial baseada na URL ou mostrar a primeira
+    this.loadInitialSection();
     
     // Adicionar classe para habilitar animações após carregamento
     document.body.classList.add('is-loaded');
@@ -85,6 +81,24 @@ const AMICA = {
   // Verificar se está sendo acessado via protocolo file://
   isFileProtocol: function() {
     return window.location.protocol === 'file:';
+  },
+  
+  // Configurar base href para GitHub Pages
+  setupBaseHref: function() {
+    const pathParts = window.location.pathname.split('/');
+    if (pathParts.length > 1) {
+      const repoName = pathParts[1];
+      // Verificar se não estamos na raiz e se um nome de repositório válido foi encontrado
+      if (repoName && repoName !== '') {
+        const baseTag = document.createElement('base');
+        baseTag.href = `/${repoName}/`;
+        document.head.appendChild(baseTag);
+        
+        if (this.config.debugMode) {
+          console.log(`Base href configurada para: /${repoName}/`);
+        }
+      }
+    }
   },
   
   // Configurar navegação entre seções
@@ -344,172 +358,6 @@ const AMICA = {
       }
     } else {
       console.warn('loadInitialSection: Não foi possível determinar a seção inicial');
-    }
-  },
-  
-  // Configurar base href para GitHub Pages
-  setupBaseHref: function() {
-    const pathParts = window.location.pathname.split('/');
-    if (pathParts.length > 1) {
-      const repoName = pathParts[1];
-      // Verificar se não estamos na raiz e se um nome de repositório válido foi encontrado
-      if (repoName && repoName !== '') {
-        const baseTag = document.createElement('base');
-        baseTag.href = `/${repoName}/`;
-        document.head.appendChild(baseTag);
-        
-        if (this.config.debugMode) {
-          console.log(`Base href configurada para: /${repoName}/`);
-        }
-      }
-    }
-  },
-  
-  // Mostrar aviso simples do GitHub Pages
-  showGitHubPagesNotice: function() {
-    const githubNotice = document.getElementById('github-notice');
-    if (githubNotice) {
-      githubNotice.style.display = 'block';
-    }
-  },
-  
-  // Configurar navegação estática
-  setupStaticNavigation: function() {
-    // Quando usando file:// ou GitHub Pages, carregamos o conteúdo diretamente em vez de AJAX
-    const menuLinks = document.querySelectorAll('.sidebar-menu a');
-    
-    menuLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        // Obter o ID da seção a partir do atributo href
-        const sectionId = link.getAttribute('href').substring(1);
-        
-        // Atualizar URL com hash
-        window.location.hash = sectionId;
-        
-        // Rolar para a seção correspondente
-        const targetSection = document.getElementById(sectionId);
-        if (targetSection) {
-          // Remover classe ativa de todos os links
-          menuLinks.forEach(l => l.classList.remove('active'));
-          
-          // Adicionar classe ativa ao link clicado
-          link.classList.add('active');
-          
-          // Rolar para a seção
-          targetSection.scrollIntoView({ behavior: 'smooth' });
-          
-          // Atualizar estado da aplicação
-          this.state.currentSection = sectionId;
-          
-          // Fechar menu móvel se estiver aberto
-          this.closeNavIfMobile();
-        }
-      });
-    });
-    
-    // Inicializar a primeira seção com base na URL
-    this.loadInitialSectionStatic();
-  },
-  
-  // Carregar seção inicial em modo estático
-  loadInitialSectionStatic: function() {
-    const hash = window.location.hash.substring(1);
-    const menuLinks = document.querySelectorAll('.sidebar-menu a');
-    
-    if (hash) {
-      // Se temos um hash na URL, ativar a seção correspondente
-      const targetLink = document.querySelector(`.sidebar-menu a[href="#${hash}"]`);
-      if (targetLink) {
-        targetLink.classList.add('active');
-        
-        // Rolar para a seção
-        const targetSection = document.getElementById(hash);
-        if (targetSection) {
-          targetSection.scrollIntoView();
-          this.state.currentSection = hash;
-        }
-      }
-    } else if (menuLinks.length > 0) {
-      // Sem hash, ativar a primeira seção
-      const firstLink = menuLinks[0];
-      const firstSectionId = firstLink.getAttribute('href').substring(1);
-      
-      firstLink.classList.add('active');
-      window.location.hash = firstSectionId;
-      
-      const firstSection = document.getElementById(firstSectionId);
-      if (firstSection) {
-        firstSection.scrollIntoView();
-        this.state.currentSection = firstSectionId;
-      }
-    }
-  },
-  
-  // Fechar menu móvel se estiver em modo móvel
-  closeNavIfMobile: function() {
-    if (this.state.isMobile && this.state.navOpen) {
-      const sidebar = document.querySelector('.sidebar');
-      if (sidebar) {
-        sidebar.classList.remove('open');
-        this.state.navOpen = false;
-      }
-    }
-  },
-  
-  // Configurar navegação mobile
-  setupMobileNav: function() {
-    const toggleBtn = document.querySelector('.nav-toggle');
-    const sidebar = document.querySelector('.sidebar');
-    
-    if (toggleBtn && sidebar) {
-      toggleBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('open');
-        this.state.navOpen = !this.state.navOpen;
-      });
-      
-      // Fechar ao clicar fora do menu
-      document.addEventListener('click', (e) => {
-        if (this.state.navOpen && 
-            !sidebar.contains(e.target) && 
-            !toggleBtn.contains(e.target)) {
-          sidebar.classList.remove('open');
-          this.state.navOpen = false;
-        }
-      });
-    }
-  },
-  
-  // Configurar navegação desktop
-  setupDesktopNav: function() {
-    // Implemente a lógica para navegação desktop
-  },
-  
-  // Configurar navegação responsiva
-  setupResponsiveNav: function() {
-    // Implemente a lógica para navegação responsiva
-  },
-  
-  // Tratar redimensionamento da janela
-  handleResize: function() {
-    const oldState = { ...this.state };
-    
-    // Atualizar estado baseado no tamanho atual da janela
-    this.state.isMobile = window.innerWidth <= this.config.breakpoints.mobile;
-    this.state.isTablet = window.innerWidth > this.config.breakpoints.mobile && window.innerWidth <= this.config.breakpoints.tablet;
-    this.state.isDesktop = window.innerWidth > this.config.breakpoints.tablet;
-    
-    // Se mudou de tamanho (mobile/tablet/desktop), ajustar a UI
-    if (oldState.isMobile !== this.state.isMobile || 
-        oldState.isTablet !== this.state.isTablet || 
-        oldState.isDesktop !== this.state.isDesktop) {
-      this.detectScreenSize();
-      
-      // Fechar menu móvel quando alternar para desktop
-      if (oldState.isMobile && !this.state.isMobile) {
-        this.closeNavIfMobile();
-      }
     }
   }
 };
