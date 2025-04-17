@@ -32,31 +32,30 @@ const AMICA = {
   init: function() {
     if (this.config.debugMode) console.log('Inicializando Relatório Amica...');
     
-    // ---> ALTERAÇÃO: Verificação direta do hostname
-    const isGithubPages = window.location.hostname.includes('github.io');
-    this.state.isGitHubPages = isGithubPages; // Ainda mantemos a variável de estado para compatibilidade
+    // Função definitiva para verificar GitHub Pages
+    this.state.isGitHubPages = this.checkIfGitHubPages();
     
-    if (isGithubPages) {
-      if (this.config.debugMode) console.log('GitHub Pages detectado: pulando inicialização padrão de eventos/dados em main.js');
-      this.checkEnvironment(); // Ainda checar e adicionar classe
-      this.detectDevice(); // Detectar mobile ainda é útil
-      // NÃO chamar setupEventListeners() nem loadInitialData()
-      document.dispatchEvent(new CustomEvent('amica:init:github')); // Evento específico para GH Pages
-      if (this.config.debugMode) console.log('Inicialização para GitHub Pages concluída em main.js.');
-      return; // Interrompe a inicialização padrão
-    }
-    // <--- FIM DA ALTERAÇÃO
-    
-    // Verificar ambiente
+    // Verificar ambiente e configurar avisos
     this.checkEnvironment();
     
     // Detectar dispositivo
     this.detectDevice();
     
-    // Configurar manipuladores de eventos
-    this.setupEventListeners();
+    if (this.state.isGitHubPages) {
+      if (this.config.debugMode) console.log('GitHub Pages detectado: ajustando inicialização para compatibilidade');
+      
+      // Configurar manipuladores de eventos específicos para GitHub Pages
+      this.setupEventListeners();
+      
+      // Disparar evento específico para GitHub Pages
+      document.dispatchEvent(new CustomEvent('amica:init:github'));
+      
+      if (this.config.debugMode) console.log('Inicialização para GitHub Pages concluída em main.js.');
+      return; // O restante da inicialização será feita pelo github-compatibility.js
+    }
     
-    // Carregar dados iniciais
+    // Continuar com a inicialização normal para ambiente local
+    this.setupEventListeners();
     this.loadInitialData();
     
     // Inicializar componentes
@@ -65,10 +64,49 @@ const AMICA = {
     if (this.config.debugMode) console.log('Aplicação inicializada com sucesso!');
   },
   
+  // Verificar se estamos no GitHub Pages
+  checkIfGitHubPages: function() {
+    return window.location.hostname.includes('github.io') || 
+           window.location.hostname.includes('pages.github.com') ||
+           window.location.hostname.includes('githubusercontent.com');
+  },
+  
   // Verificar ambiente de execução
   checkEnvironment: function() {
-    // Verificar se está sendo acessado via protocolo file://
-    if (this.state.isFileProtocol && !this.state.isGitHubPages) {
+    // Função para esconder todos os avisos
+    const hideAllWarnings = () => {
+      const warnings = [
+        document.getElementById('local-warning'),
+        document.getElementById('github-warning'),
+        document.getElementById('file-protocol-notice')
+      ];
+      
+      warnings.forEach(warning => {
+        if (warning) warning.style.display = 'none';
+      });
+      
+      if (this.config.debugMode) console.log('Todos os avisos foram ocultados inicialmente');
+    };
+    
+    // Esconder todos os avisos inicialmente
+    hideAllWarnings();
+    
+    // Verificar GitHub Pages PRIMEIRO (prioridade mais alta)
+    if (this.state.isGitHubPages) {
+      document.body.classList.add('is-github-pages');
+      
+      // Mostrar APENAS o aviso do GitHub Pages
+      const githubWarning = document.getElementById('github-warning');
+      if (githubWarning) {
+        githubWarning.style.display = 'block';
+        if (this.config.debugMode) console.log('GitHub Pages detectado, exibindo aviso específico');
+      }
+      
+      return; // Sair da função para evitar que outros avisos sejam exibidos
+    }
+    
+    // Verificar se está sendo acessado via protocolo file:// (APENAS se não for GitHub Pages)
+    if (this.state.isFileProtocol) {
       console.warn('Aviso: Este relatório está sendo acessado via protocolo file://. ' +
                    'Algumas funcionalidades, como carregamento dinâmico de conteúdo, podem não funcionar corretamente. ' +
                    'Recomendamos o uso de um servidor HTTP local.');
@@ -76,29 +114,25 @@ const AMICA = {
       // Adicionar classe para estilização específica
       document.body.classList.add('is-file-protocol');
       
+      // Mostrar o aviso de protocolo file
+      const fileProtocolWarning = document.getElementById('local-warning');
+      if (fileProtocolWarning) {
+        fileProtocolWarning.style.display = 'block';
+        if (this.config.debugMode) console.log('Protocolo file:// detectado, exibindo aviso apropriado');
+      }
+      
+      // Mostrar o aviso importante com instruções
+      const importantNotice = document.getElementById('file-protocol-notice');
+      if (importantNotice) {
+        importantNotice.style.display = 'block';
+        if (this.config.debugMode) console.log('Exibindo instruções detalhadas para acesso local');
+      }
+      
       // Configurar compatibilidade com protocolo file://
       this.setupFileProtocolCompatibility();
       
       // Disparar evento para possíveis ajustes em outros módulos
       document.dispatchEvent(new CustomEvent('amica:fileProtocolDetected'));
-    }
-    
-    // Verificar se está no GitHub Pages
-    if (this.state.isGitHubPages) {
-      document.body.classList.add('is-github-pages');
-      if (this.config.debugMode) console.log('GitHub Pages detectado, modo de compatibilidade será aplicado');
-      
-      // Quando estamos no GitHub Pages, esconder o aviso de protocolo file
-      const fileProtocolWarning = document.querySelector('.file-protocol-warning');
-      if (fileProtocolWarning) {
-        fileProtocolWarning.style.display = 'none';
-      }
-      
-      // Esconder também o aviso importante
-      const importantNotice = document.querySelector('.important-notice');
-      if (importantNotice) {
-        importantNotice.style.display = 'none';
-      }
     }
   },
   
@@ -106,18 +140,6 @@ const AMICA = {
   setupFileProtocolCompatibility: function() {
     // Se já foi consertado ou estamos no GitHub Pages, não fazer novamente
     if (this.state.hasFixedFileProtocolIssue || this.state.isGitHubPages) return;
-    
-    // Mostrar aviso de protocolo file:// apenas se não estiver no GitHub Pages
-    const fileProtocolWarning = document.querySelector('.file-protocol-warning');
-    if (fileProtocolWarning && !this.state.isGitHubPages) {
-      fileProtocolWarning.style.display = 'block';
-    }
-    
-    // Mostrar aviso importante apenas se não estiver no GitHub Pages
-    const importantNotice = document.querySelector('.important-notice');
-    if (importantNotice && !this.state.isGitHubPages) {
-      importantNotice.style.display = 'block';
-    }
     
     // Marcar como consertado
     this.state.hasFixedFileProtocolIssue = true;
@@ -158,7 +180,22 @@ const AMICA = {
         if (typeof AmicaCharts !== 'undefined' && AmicaCharts.initializeCharts) {
           AmicaCharts.initializeCharts();
         }
+        
+        // Disparar evento de carregamento completo
+        document.dispatchEvent(new CustomEvent('amica:loaded'));
       }, 500);
+    });
+    
+    // Ouvir eventos personalizados de navegação para compatibilidade entre ambientes
+    document.addEventListener('amica:navigate', (event) => {
+      if (event.detail && event.detail.section) {
+        this.state.currentSection = event.detail.section;
+        
+        // Atualizar URL com hash para manter consistência
+        if (window.location.hash !== `#${event.detail.section}`) {
+          window.history.pushState(null, null, `#${event.detail.section}`);
+        }
+      }
     });
   },
   

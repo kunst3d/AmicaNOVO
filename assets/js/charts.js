@@ -228,6 +228,10 @@ const AmicaCharts = (function() {
         chartInstances[chartId].data = newData;
         chartInstances[chartId].update();
       }
+    },
+    globalChartConfig: globalChartConfig,
+    storeChartInstance: function(chartId, chartInstance) {
+      chartInstances[chartId] = chartInstance;
     }
   };
 })();
@@ -251,4 +255,56 @@ document.addEventListener('amica:sectionChange', function(e) {
   } else {
     // console.log('AmicaCharts.initSectionCharts() ignorado no modo GitHub Pages.'); // Log opcional
   }
+});
+
+// Evento personalizado para inicializar gráficos mesmo no modo GitHub Pages
+document.addEventListener('amica:initCharts', function(e) {
+  const container = e.detail && e.detail.container ? e.detail.container : document;
+  
+  // Detectar e inicializar gráficos definidos via atributos data-* nos elementos canvas
+  container.querySelectorAll('canvas[data-chart-type]').forEach(function(canvas) {
+    try {
+      const chartId = canvas.id;
+      const chartType = canvas.getAttribute('data-chart-type');
+      
+      // Verificar se já existe uma instância
+      if (AmicaCharts.getChartInstance(chartId)) {
+        return;
+      }
+      
+      let chartData = {};
+      let chartOptions = {};
+      
+      // Tentar obter dados e opções dos atributos
+      try {
+        if (canvas.hasAttribute('data-chart-data')) {
+          chartData = JSON.parse(canvas.getAttribute('data-chart-data'));
+        }
+        
+        if (canvas.hasAttribute('data-chart-options')) {
+          chartOptions = JSON.parse(canvas.getAttribute('data-chart-options'));
+        }
+      } catch (parseError) {
+        console.error(`Erro ao analisar dados do gráfico ${chartId}:`, parseError);
+        return;
+      }
+      
+      // Criar o gráfico com as opções combinadas
+      const ctx = canvas.getContext('2d');
+      const mergedOptions = {...AmicaCharts.globalChartConfig, ...chartOptions};
+      
+      const chartInstance = new Chart(ctx, {
+        type: chartType,
+        data: chartData,
+        options: mergedOptions
+      });
+      
+      // Armazenar a instância para referência
+      AmicaCharts.storeChartInstance(chartId, chartInstance);
+      
+      console.log(`Gráfico ${chartId} inicializado via data-attributes`);
+    } catch (error) {
+      console.error(`Erro ao inicializar gráfico via data-attributes:`, error);
+    }
+  });
 });

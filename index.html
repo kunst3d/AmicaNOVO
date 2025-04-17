@@ -6,23 +6,29 @@
     <title>Relatório Amica - Análise de Mercado e Estratégia</title>
     <meta name="description" content="Análise estratégica do mercado brasileiro de semijoias para entrada da marca Amica">
     
-    <!-- Base URL para GitHub Pages - será ignorada em servidores locais -->
+    <!-- Detecção e configuração do GitHub Pages -->
     <script>
-        // Detecta se estamos no GitHub Pages e configura a base href dinamicamente
-        if (window.location.hostname.includes('github.io')) {
+        // Função unificada para detectar GitHub Pages
+        function isGitHubPages() {
+            return window.location.hostname.includes('github.io') || 
+                   window.location.hostname.includes('pages.github.com') ||
+                   window.location.hostname.includes('githubusercontent.com');
+        }
+        
+        // Configurar base href para GitHub Pages
+        if (isGitHubPages()) {
             const pathParts = window.location.pathname.split('/');
             const repoName = pathParts[1]; // O primeiro segmento após a barra é o nome do repo
             document.write(`<base href="/${repoName}/">`);
             console.log(`Base href configurada para: /${repoName}/`);
-        }
-    </script>
-    
-    <!-- GitHub Pages - Melhorias de Compatibilidade -->
-    <script>
-        // Detecta se estamos no GitHub Pages e adiciona classe ao HTML
-        if (window.location.hostname.includes('github.io')) {
-            document.documentElement.classList.add('github-pages');
-            // Adiciona meta tag para desabilitar cache
+            
+            // Adicionar classe global para GitHub Pages
+            document.addEventListener('DOMContentLoaded', function() {
+                document.documentElement.classList.add('github-pages');
+                document.body.classList.add('github-pages-mode');
+            });
+            
+            // Adicionar meta tag para desabilitar cache
             const meta = document.createElement('meta');
             meta.setAttribute('http-equiv', 'Cache-Control');
             meta.setAttribute('content', 'no-cache, no-store, must-revalidate');
@@ -46,14 +52,23 @@
     <link rel="stylesheet" href="assets/css/timeline.css">
     <link rel="stylesheet" href="assets/css/risk-matrix.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="assets/css/warnings.css">
     
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <!-- Aviso de protocolo File -->
-    <div class="file-protocol-warning">
-        <strong>Aviso de acesso local:</strong> Para melhor experiência, acesse este relatório através de um servidor HTTP local. Use <code>python -m http.server 8000</code> ou <code>npx serve</code> e acesse via http://localhost:8000.
+    <!-- Sistema de avisos unificado - apenas um será exibido de cada vez -->
+    <div class="warnings-container">
+        <!-- Aviso de protocolo File -->
+        <div class="warning file-protocol-warning" id="local-warning" style="display: none;">
+            <strong>Aviso de acesso local:</strong> Para melhor experiência, acesse este relatório através de um servidor HTTP local. Use <code>python -m http.server 8000</code> ou <code>npx serve</code> e acesse via http://localhost:8000.
+        </div>
+        
+        <!-- Aviso GitHub Pages -->
+        <div class="warning github-pages-warning" id="github-warning" style="display: none;">
+            <strong>Modo GitHub Pages:</strong> Você está visualizando uma versão hospedada no GitHub Pages. Algumas adaptações foram aplicadas para garantir compatibilidade neste ambiente.
+        </div>
     </div>
     
     <div class="app-container">
@@ -144,7 +159,7 @@
                 </div>
                 
                 <!-- Mensagem informativa para acessos via protocolo file:// -->
-                <div class="important-notice">
+                <div class="important-notice" id="file-protocol-notice" style="display: none;">
                     <h4>Atenção: Modo de Acesso por Arquivo Local Detectado</h4>
                     <p>Este relatório está sendo acessado diretamente pelo sistema de arquivos (protocolo file://), o que pode limitar algumas funcionalidades. Para uma experiência completa, recomendamos o uso de um servidor HTTP local:</p>
                     <pre>
@@ -258,28 +273,22 @@ php -S localhost:8000
                 </section>
             </div>
             
-            <!-- Rodapé do site -->
-            <div id="footer-container"></div>
+            <!-- Rodapé -->
+            <footer class="main-footer">
+                <div class="footer-content">
+                    <div class="copyright">
+                        &copy; 2023 Amica - Relatório de Análise de Mercado
+                    </div>
+                </div>
+            </footer>
         </main>
     </div>
     
     <!-- Scripts -->
     <script src="assets/js/main.js"></script>
-    <script src="assets/js/navigation.js"></script>
-    <script src="assets/js/tab-navigation.js"></script>
-    <script src="assets/js/data-loader.js"></script>
     <script src="assets/js/charts.js"></script>
-    <script src="assets/js/components-loader.js"></script>
     <script src="assets/js/risk-matrix.js"></script>
-    
-    <!-- Script especial para compatibilidade com GitHub Pages -->
-    <script>
-        if (window.location.hostname.includes('github.io')) {
-            // Carregamos o script de compatibilidade apenas quando estamos no GitHub Pages
-            const script = document.createElement('script');
-            script.src = 'assets/js/github-compatibility.js';
-            document.body.appendChild(script);
-        }
-    </script>
+    <script src="assets/js/timeline.js"></script>
+    <script src="assets/js/github-compatibility.js"></script>
 </body>
 </html>
