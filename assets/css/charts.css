@@ -220,7 +220,8 @@
   color: var(--color-gray);
 }
 
-/* Variáveis de cores para gráficos */
+/* Variáveis de cores para gráficos - REMOVIDAS (Definidas em base.css) */
+/*
 :root {
   --chart-color-1-rgb: 166, 124, 82;
   --chart-color-2-rgb: 42, 75, 69;
@@ -234,6 +235,7 @@
   --chart-color-4: rgb(var(--chart-color-4-rgb));
   --chart-color-5: rgb(var(--chart-color-5-rgb));
 }
+*/
 
 /* Responsividade */
 @media (max-width: 767px) {

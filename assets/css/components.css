@@ -304,14 +304,14 @@
 
 .chart-card__body {
   position: relative; /* Necessário para o canvas */
-  height: 350px; /* Altura padrão para gráficos */
+  height: 400px; /* Altura padrão para gráficos - AUMENTADA */
   width: 100%;
 }
 
 /* Ajuste a altura para telas menores se necessário */
 @media (max-width: 768px) {
   .chart-card__body {
-    height: 300px;
+    height: 300px; /* Mantém altura menor para mobile */
   }
 }
 
