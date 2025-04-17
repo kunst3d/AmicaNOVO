@@ -31,10 +31,12 @@ const ChartUtils = {
                     style.getPropertyValue('--color-primary').trim(),
                     style.getPropertyValue('--color-secondary').trim(),
                     style.getPropertyValue('--color-tertiary').trim(),
-                    style.getPropertyValue('--color-accent').trim(),
+                    style.getPropertyValue('--color-accent1').trim(),
+                    style.getPropertyValue('--color-accent2').trim(),
                     style.getPropertyValue('--color-success').trim(),
                     style.getPropertyValue('--color-warning').trim(),
-                    style.getPropertyValue('--color-danger').trim()
+                    style.getPropertyValue('--color-danger').trim(),
+                    style.getPropertyValue('--color-light-gray').trim()
                 ].filter(Boolean);
                 
                 if (baseColors.length > 0) {
@@ -81,6 +83,34 @@ const ChartUtils = {
     },
     
     /**
+     * Processa variáveis CSS em strings de cores
+     * @param {string} colorVar - String contendo possivelmente uma variável CSS
+     * @returns {string} - Cor processada (substituída ou a original)
+     */
+    processCssVar: function(colorVar) {
+        if (!colorVar || typeof colorVar !== 'string') return colorVar;
+        
+        // Verificar se é uma variável CSS (var(--xxx))
+        if (colorVar.includes('var(')) {
+            try {
+                // Extrair nome da variável
+                const varName = colorVar.match(/var\((.*?)\)/)[1];
+                if (varName) {
+                    // Obter valor da variável CSS
+                    const cssValue = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+                    if (cssValue) {
+                        return cssValue;
+                    }
+                }
+            } catch (e) {
+                console.warn('Erro ao processar variável CSS:', e);
+            }
+        }
+        
+        return colorVar;
+    },
+    
+    /**
      * Aplica uma paleta de cores aos datasets de um gráfico
      * @param {Object} config - Configuração do gráfico
      * @returns {Object} - Configuração atualizada
@@ -97,32 +127,46 @@ const ChartUtils = {
         
         // Processar cada dataset
         config.data.datasets.forEach((dataset, datasetIndex) => {
+            // Primeiro, processar qualquer variável CSS nas cores já definidas
+            if (dataset.backgroundColor && typeof dataset.backgroundColor === 'string') {
+                dataset.backgroundColor = this.processCssVar(dataset.backgroundColor);
+            }
+            if (dataset.borderColor && typeof dataset.borderColor === 'string') {
+                dataset.borderColor = this.processCssVar(dataset.borderColor);
+            }
+            
             // Caso especial para gráficos pie e doughnut
             if (['pie', 'doughnut'].includes(chartType)) {
                 if (dataset.data && Array.isArray(dataset.data)) {
                     console.log(`Tipo de gráfico ${chartType} com ${dataset.data.length} segmentos`);
                     
                     // Aplicar cores mais vibrantes para segmentos (80% opacidade para melhor visualização)
-                    dataset.backgroundColor = dataset.data.map((_, dataIndex) => {
-                        const color = palette[dataIndex % palette.length];
-                        return this.hexToRgba(color, 0.8); // Usar 80% opacidade para melhor visual
-                    });
+                    if (!Array.isArray(dataset.backgroundColor)) {
+                        dataset.backgroundColor = dataset.data.map((_, dataIndex) => {
+                            const color = palette[dataIndex % palette.length];
+                            return this.hexToRgba(color, 0.8); // Usar 80% opacidade para melhor visual
+                        });
+                    }
                     
                     // Definir bordas para dar melhor contorno aos segmentos
-                    dataset.borderColor = dataset.data.map((_, dataIndex) => {
-                        return palette[dataIndex % palette.length]; // Cor sólida para borda
-                    });
+                    if (!Array.isArray(dataset.borderColor)) {
+                        dataset.borderColor = dataset.data.map((_, dataIndex) => {
+                            return palette[dataIndex % palette.length]; // Cor sólida para borda
+                        });
+                    }
                     dataset.borderWidth = dataset.borderWidth || 1.5;
                     
                     // Melhorar a interatividade no hover
-                    dataset.hoverBackgroundColor = dataset.data.map((_, dataIndex) => {
-                        // Destacar no hover com cor ligeiramente mais brilhante
-                        const color = palette[dataIndex % palette.length];
-                        return this.brightenColor(color, 15);
-                    });
-                    dataset.hoverBorderColor = '#ffffff';
-                    dataset.hoverBorderWidth = 2;
-                    dataset.hoverOffset = 10; // Aumentar deslocamento no hover
+                    if (!Array.isArray(dataset.hoverBackgroundColor)) {
+                        dataset.hoverBackgroundColor = dataset.data.map((_, dataIndex) => {
+                            // Destacar no hover com cor ligeiramente mais brilhante
+                            const color = palette[dataIndex % palette.length];
+                            return this.brightenColor(color, 15);
+                        });
+                    }
+                    dataset.hoverBorderColor = dataset.hoverBorderColor || '#ffffff';
+                    dataset.hoverBorderWidth = dataset.hoverBorderWidth || 2;
+                    dataset.hoverOffset = dataset.hoverOffset || 10; // Aumentar deslocamento no hover
                     
                     // Registrar cores aplicadas para debug
                     console.log(`Cores aplicadas ao dataset para ${chartType}:`, dataset.backgroundColor);
@@ -130,45 +174,74 @@ const ChartUtils = {
             } 
             // Caso geral para gráficos de barra
             else if (chartType === 'bar') {
-                // Se não for um array, criar array com cores distintas
-                if (dataset.data && Array.isArray(dataset.data) && !Array.isArray(dataset.backgroundColor)) {
-                    dataset.backgroundColor = dataset.data.map((_, dataIndex) => 
-                        this.hexToRgba(palette[(datasetIndex + dataIndex) % palette.length], 0.7));
-                    
-                    dataset.borderColor = dataset.data.map((_, dataIndex) => 
-                        palette[(datasetIndex + dataIndex) % palette.length]);
-                    
-                    dataset.borderWidth = dataset.borderWidth ?? 1;
+                // IMPORTANTE: Para barras agrupadas, manter consistência de cores
+                // Respeitar as cores definidas manualmente no dataset
+                if (dataset.backgroundColor) {
+                    // Se já tiver cores definidas, não modificar
+                    if (Array.isArray(dataset.backgroundColor)) {
+                        // Processar variáveis CSS em arrays
+                        dataset.backgroundColor = dataset.backgroundColor.map(color => 
+                            this.processCssVar(color));
+                    } 
+                    // Se for cor única, processar mas manter
+                    else {
+                        const processedColor = this.processCssVar(dataset.backgroundColor);
+                        dataset.backgroundColor = processedColor;
+                    }
                 } else {
-                    // Cor única para dataset
+                    // Se não tiver cor definida, aplicar da paleta pelo índice do dataset
                     const colorIndex = datasetIndex % palette.length;
                     dataset.backgroundColor = this.hexToRgba(palette[colorIndex], 0.7);
-                    dataset.borderColor = palette[colorIndex];
-                    dataset.borderWidth = dataset.borderWidth ?? 1;
                 }
+                
+                // Mesmo tratamento para bordas
+                if (dataset.borderColor) {
+                    if (Array.isArray(dataset.borderColor)) {
+                        dataset.borderColor = dataset.borderColor.map(color => 
+                            this.processCssVar(color));
+                    } else {
+                        const processedColor = this.processCssVar(dataset.borderColor);
+                        dataset.borderColor = processedColor;
+                    }
+                } else {
+                    // Aplicar cor de borda baseada na cor de fundo
+                    if (typeof dataset.backgroundColor === 'string') {
+                        dataset.borderColor = dataset.backgroundColor.replace(/rgba?\(.*,\s*[\d.]+\)/, match => {
+                            return match.replace(/,\s*[\d.]+\)/, ', 1)');
+                        });
+                    } else {
+                        const colorIndex = datasetIndex % palette.length;
+                        dataset.borderColor = palette[colorIndex];
+                    }
+                }
+                
+                dataset.borderWidth = dataset.borderWidth ?? 1;
             }
             // Outros tipos de gráficos (line, radar, etc)
             else {
                 const colorIndex = datasetIndex % palette.length;
                 const baseColor = palette[colorIndex];
                 
-                // Configuração específica por tipo
-                if (chartType === 'line') {
-                    dataset.borderColor = baseColor;
-                    dataset.backgroundColor = this.hexToRgba(baseColor, 0.1);
-                    dataset.pointBackgroundColor = baseColor;
-                    dataset.pointBorderColor = '#fff';
-                    dataset.pointHoverBackgroundColor = '#fff';
-                    dataset.pointHoverBorderColor = baseColor;
-                } else if (chartType === 'radar') {
-                    dataset.borderColor = baseColor;
-                    dataset.backgroundColor = this.hexToRgba(baseColor, 0.2);
-                    dataset.pointBackgroundColor = baseColor;
-                    dataset.pointBorderColor = '#fff';
-                } else {
-                    // Configuração genérica
-                    dataset.borderColor = baseColor;
-                    dataset.backgroundColor = this.hexToRgba(baseColor, 0.7);
+                // Respeitar cores já definidas
+                if (!dataset.backgroundColor) {
+                    // Configuração específica por tipo
+                    if (chartType === 'line') {
+                        dataset.borderColor = dataset.borderColor || baseColor;
+                        dataset.backgroundColor = dataset.backgroundColor || this.hexToRgba(baseColor, 0.1);
+                        dataset.pointBackgroundColor = dataset.pointBackgroundColor || baseColor;
+                        dataset.pointBorderColor = dataset.pointBorderColor || '#fff';
+                        dataset.pointHoverBackgroundColor = dataset.pointHoverBackgroundColor || '#fff';
+                        dataset.pointHoverBorderColor = dataset.pointHoverBorderColor || baseColor;
+                    } else if (chartType === 'radar') {
+                        dataset.borderColor = dataset.borderColor || baseColor;
+                        dataset.backgroundColor = dataset.backgroundColor || this.hexToRgba(baseColor, 0.2);
+                        dataset.pointBackgroundColor = dataset.pointBackgroundColor || baseColor;
+                        dataset.pointBorderColor = dataset.pointBorderColor || '#fff';
+                    } else {
+                        // Configuração genérica
+                        dataset.borderColor = dataset.borderColor || baseColor;
+                        dataset.backgroundColor = dataset.backgroundColor || this.hexToRgba(baseColor, 0.7);
+                    }
                 }
             }
         });
@@ -184,6 +257,20 @@ const ChartUtils = {
      */
     brightenColor: function(color, percent) {
         if (!color) return '#ffffff';
+        
+        // Processar variável CSS se necessário
+        color = this.processCssVar(color);
+        
+        // Converter rgba para hex
+        if (color.startsWith('rgba') || color.startsWith('rgb')) {
+            const rgbValues = color.match(/\d+/g);
+            if (rgbValues && rgbValues.length >= 3) {
+                const r = parseInt(rgbValues[0]);
+                const g = parseInt(rgbValues[1]);
+                const b = parseInt(rgbValues[2]);
+                color = '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+            }
+        }
         
         // Remover # e validar formato
         color = color.replace('#', '');
@@ -268,6 +355,16 @@ const ChartUtils = {
                     bottom: 10,
                     left: 10
                 };
+            }
+        } else if (config.type === 'bar') {
+            // Configurações específicas para gráficos de barras agrupadas
+            // Garantir cores consistentes entre grupos
+            config.options.plugins.tooltip = config.options.plugins.tooltip || {};
+            config.options.plugins.tooltip.callbacks = config.options.plugins.tooltip.callbacks || {};
+            
+            // Melhorar visualização em dispositivos móveis
+            if (isMobile && config.data && config.data.datasets && config.data.datasets.length > 3) {
+                config.options.plugins.legend.display = true;
             }
         }
         

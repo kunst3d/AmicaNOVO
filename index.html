@@ -241,5 +241,24 @@
     
     <!-- Inicialização de gráficos -->
     <script src="assets/js/charts.js"></script>
+    
+    <!-- Ferramentas de depuração e correção automática -->
+    <script src="assets/js/chart-debugger.js"></script>
+    <script src="assets/js/chart-fixer.js"></script>
+    
+    <!-- Script para auto-verificação de cores dos gráficos após carregamento -->
+    <script>
+        document.addEventListener('amica:sectionLoaded', function(e) {
+            // Verificar cores após carregamento de seção
+            setTimeout(function() {
+                if (e.detail.sectionId === 'publico-alvo') {
+                    console.log('Verificando cores dos gráficos na seção Público-Alvo...');
+                    if (window.ChartDebugger) {
+                        ChartDebugger.verificarCores();
+                    }
+                }
+            }, 500);
+        });
+    </script>
 </body>
 </html>
