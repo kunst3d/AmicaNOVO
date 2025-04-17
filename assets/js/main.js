@@ -1,7 +1,6 @@
 /**
- * main.js
- * Script simplificado para o Relatório Amica
- * Otimizado para funcionamento no GitHub Pages
+ * main.js - Versão simplificada para o Relatório Amica
+ * Otimizado para funcionar no GitHub Pages com conteúdo embutido
  */
 
 const AMICA = {
@@ -13,8 +12,7 @@ const AMICA = {
   // Estado da aplicação
   state: {
     currentSection: null,
-    isGitHubPages: false,
-    sectionsLoaded: {}
+    isGitHubPages: false
   },
   
   // Inicialização da aplicação
@@ -24,7 +22,7 @@ const AMICA = {
     // Verificar se estamos no GitHub Pages
     this.state.isGitHubPages = this.checkIfGitHubPages();
     
-    // Configurar para GitHub Pages se necessário
+    // Configurar base href para GitHub Pages se necessário
     if (this.state.isGitHubPages) {
       console.log("Executando no GitHub Pages, configurando base href");
       document.getElementById('github-notice').style.display = 'block';
@@ -33,11 +31,14 @@ const AMICA = {
       document.getElementById('local-notice').style.display = 'block';
     }
     
-    // Adicionar meta tag de codificação UTF-8 se não existir
-    this.ensureUtf8Encoding();
+    // Carregar todo o conteúdo fixo
+    this.loadFixedContent();
     
     // Inicializar navegação
     this.setupNavigation();
+    
+    // Carregar seção inicial baseada na URL ou mostrar a primeira
+    this.loadInitialSection();
     
     // Adicionar classe para habilitar animações após carregamento
     document.body.classList.add('is-loaded');
@@ -67,268 +68,277 @@ const AMICA = {
     }
   },
   
-  // Garantir que a codificação UTF-8 esteja definida
-  ensureUtf8Encoding: function() {
-    // Verificar se já existe meta tag charset
-    let charsetMeta = document.querySelector('meta[charset]');
+  // Carregar todo o conteúdo fixo
+  loadFixedContent: function() {
+    // Este método insere conteúdo fixo em cada seção
+    // Para uma versão real, você carregaria dinamicamente o conteúdo de arquivos
     
-    // Se não existir, criar uma
-    if (!charsetMeta) {
-      charsetMeta = document.createElement('meta');
-      charsetMeta.setAttribute('charset', 'UTF-8');
-      document.head.insertBefore(charsetMeta, document.head.firstChild);
-    } else {
-      // Garantir que seja UTF-8
-      charsetMeta.setAttribute('charset', 'UTF-8');
-    }
-    
-    // Verificar também http-equiv Content-Type
-    let contentTypeMeta = document.querySelector('meta[http-equiv="Content-Type"]');
-    if (!contentTypeMeta) {
-      contentTypeMeta = document.createElement('meta');
-      contentTypeMeta.setAttribute('http-equiv', 'Content-Type');
-      contentTypeMeta.setAttribute('content', 'text/html; charset=utf-8');
-      document.head.insertBefore(contentTypeMeta, document.head.firstChild);
-    } else {
-      contentTypeMeta.setAttribute('content', 'text/html; charset=utf-8');
-    }
-  },
-  
-  // Configurar navegação
-  setupNavigation: function() {
-    // Selecionar links de navegação
-    const navLinks = document.querySelectorAll('.sidebar-nav__link');
-    
-    // Adicionar evento de clique a cada link
-    navLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        // Obter o ID da seção do atributo href
-        const sectionId = link.getAttribute('href').substring(1);
-        
-        // Remover classe ativa de todos os links
-        navLinks.forEach(l => l.classList.remove('active'));
-        
-        // Adicionar classe ativa ao link clicado
-        link.classList.add('active');
-        
-        // Carregar e mostrar a seção correspondente
-        this.loadSection(sectionId);
-        
-        // Atualizar URL
-        window.location.hash = sectionId;
-        
-        // Log para debugging
-        if (this.config.debugMode) {
-          console.log(`Navegação: Clique em ${sectionId}`);
-        }
-      });
-    });
-    
-    // Lidar com navegação através do hash na URL
-    window.addEventListener('hashchange', () => {
-      const hash = window.location.hash.substring(1);
-      if (hash) {
-        this.loadSection(hash);
-        
-        // Atualizar link ativo
-        const activeLink = document.querySelector(`.sidebar-nav__link[href="#${hash}"]`);
-        if (activeLink) {
-          const navLinks = document.querySelectorAll('.sidebar-nav__link');
-          navLinks.forEach(l => l.classList.remove('active'));
-          activeLink.classList.add('active');
-        }
-      }
-    });
-    
-    // Carregar seção inicial baseada na URL ou mostrar a primeira
-    this.loadInitialSection();
-  },
-  
-  // Carregar conteúdo da seção a partir do arquivo HTML correspondente
-  loadSection: function(sectionId) {
-    // Atualizar estado
-    this.state.currentSection = sectionId;
-    
-    // Log para debugging
-    console.log(`Carregando seção: ${sectionId}`);
-    
-    // Primeiro, ocultar todas as seções
-    const sections = document.querySelectorAll('.content-section');
-    sections.forEach(section => {
-      section.style.display = 'none';
-    });
-    
-    // Mostrar o indicador de carregamento
-    const loader = document.getElementById('main-loader');
-    if (loader) {
-      loader.style.display = 'flex';
-    }
-    
-    // Verificar se a seção já foi carregada antes
-    if (this.state.sectionsLoaded[sectionId]) {
-      this.showLoadedSection(sectionId);
-      return;
-    }
-    
-    // Caminho para o arquivo HTML
-    const filePath = `content/${sectionId}.html`;
-    
-    // Carregar o conteúdo via AJAX
-    fetch(filePath)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`Erro ao carregar ${filePath}: ${response.status}`);
-        }
-        return response.arrayBuffer();
-      })
-      .then(buffer => {
-        // Tentar decodificar o buffer como UTF-8
-        let htmlContent = this.decodeContent(buffer);
-        
-        // Armazenar o conteúdo no estado
-        this.state.sectionsLoaded[sectionId] = htmlContent;
-        
-        // Mostrar a seção
-        this.showLoadedSection(sectionId);
-      })
-      .catch(error => {
-        console.error(`Erro ao carregar seção ${sectionId}:`, error);
-        
-        // Mostrar mensagem de erro na seção
-        const targetSection = document.getElementById(sectionId);
-        if (targetSection) {
-          const placeholder = targetSection.querySelector('.section-content-placeholder');
-          if (placeholder) {
-            placeholder.innerHTML = `
-              <div class="error-message">
-                <h2>Erro ao carregar conteúdo</h2>
-                <p>${error.message}</p>
-                <p>Tente recarregar a página ou acessar através de um servidor web local.</p>
+    // Dados simplificados para cada seção
+    const sections = [
+      {
+        id: 'sumario-executivo',
+        title: 'Sumário Executivo',
+        content: `
+          <div class="section__header">
+            <h1 class="section__title">Sumário Executivo</h1>
+          </div>
+          <div class="subsection" id="visao-geral">
+            <div class="subsection__header">
+              <h2 class="subsection__title">Visão Geral</h2>
+              <p class="subsection__description">Análise estratégica para o lançamento da Amica, marca brasileira de semijoias focada no varejo popular.</p>
+            </div>
+            <div class="content-card">
+              <div class="content-card__body">
+                <p>O presente relatório analisa as oportunidades e estratégias para o lançamento da Amica, marca brasileira de semijoias voltada ao varejo popular. Aproveitando a infraestrutura da Simon Joias (empresa com 15 anos de atuação no atacado), a Amica posiciona-se como alternativa de qualidade às importações chinesas, oferecendo design nacional e preços acessíveis.</p>
+                <p>A análise indica um mercado de semijoias em crescimento no Brasil (21,9% em 2023), com oportunidades significativas no segmento de varejo digital. Os principais diferenciais competitivos identificados são: produção nacional de qualidade, design contemporâneo e estratégia omnichannel integrada.</p>
               </div>
-            `;
-          }
-          targetSection.style.display = 'block';
+            </div>
+          </div>
+          <div class="subsection" id="abordagem-implementacao">
+            <div class="subsection__header">
+              <h2 class="subsection__title">Abordagem Faseada de Implementação</h2>
+              <p class="subsection__description">Estratégia de entrada no mercado dividida em três fases distintas para otimizar recursos e minimizar riscos.</p>
+            </div>
+            <div class="content-card">
+              <div class="content-card__body">
+                <ul class="feature-list">
+                  <li class="feature-list__item">
+                    <div class="feature-list__icon">
+                      <span class="icon-phase1"></span>
+                    </div>
+                    <div class="feature-list__content">
+                      <strong>Fase inicial (6 meses)</strong>: Foco em 2-3 marketplaces estratégicos (Shopee e Mercado Livre), desenvolvimento de 50-80 SKUs básicos e estratégia de precificação segmentada
+                    </div>
+                  </li>
+                  <li class="feature-list__item">
+                    <div class="feature-list__icon">
+                      <span class="icon-phase2"></span>
+                    </div>
+                    <div class="feature-list__content">
+                      <strong>Fase de crescimento (7-12 meses)</strong>: Lançamento de e-commerce próprio, programa de fidelidade e expansão de portfólio
+                    </div>
+                  </li>
+                  <li class="feature-list__item">
+                    <div class="feature-list__icon">
+                      <span class="icon-phase3"></span>
+                    </div>
+                    <div class="feature-list__content">
+                      <strong>Fase de consolidação (13-24 meses)</strong>: Desenvolvimento de clube de assinatura, possibilidade de loja conceito e avaliação para expansão internacional
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="subsection" id="projecoes-financeiras">
+            <div class="subsection__header">
+              <h2 class="subsection__title">Projeções Financeiras</h2>
+              <p class="subsection__description">Previsões de performance financeira baseadas em benchmarks do setor e análises de mercado.</p>
+            </div>
+            <div class="content-card">
+              <div class="content-card__body">
+                <p>Com base nas projeções financeiras, estima-se um faturamento de R$ 150-200 mil mensais após 12 meses de operação, com margem líquida entre 22-26%. O relatório detalha as estratégias específicas para cada área operacional e mercadológica.</p>
+                <div class="metrics-grid">
+                  <div class="metric-card">
+                    <div class="metric-card__header">
+                      <h4 class="metric-card__title">Faturamento (12 meses)</h4>
+                    </div>
+                    <div class="metric-card__value">R$ 150-200K</div>
+                    <div class="metric-card__description">mensal</div>
+                  </div>
+                  <div class="metric-card">
+                    <div class="metric-card__header">
+                      <h4 class="metric-card__title">Margem Líquida</h4>
+                    </div>
+                    <div class="metric-card__value">22-26%</div>
+                    <div class="metric-card__description">após consolidação</div>
+                  </div>
+                  <div class="metric-card">
+                    <div class="metric-card__header">
+                      <h4 class="metric-card__title">ROI 24 meses</h4>
+                    </div>
+                    <div class="metric-card__value">185%</div>
+                    <div class="metric-card__description">sobre investimento inicial</div>
+                  </div>
+                  <div class="metric-card">
+                    <div class="metric-card__header">
+                      <h4 class="metric-card__title">Payback</h4>
+                    </div>
+                    <div class="metric-card__value">18 meses</div>
+                    <div class="metric-card__description">tempo de recuperação</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 'analise-mercado',
+        title: 'Análise de Mercado',
+        content: `
+          <div class="section__header">
+            <h1 class="section__title">Análise de Mercado</h1>
+          </div>
+          <div class="subsection" id="panorama-geral">
+            <div class="subsection__header">
+              <h2 class="subsection__title">Panorama Geral</h2>
+              <p class="subsection__description">Análise macroeconômica e tendências do mercado brasileiro de semijoias.</p>
+            </div>
+            <div class="content-card">
+              <div class="content-card__body">
+                <p>O mercado brasileiro de semijoias tem apresentado crescimento constante nos últimos anos, mesmo diante de cenários econômicos desafiadores. Dados da IBGM (Instituto Brasileiro de Gemas e Metais Preciosos) e da AJESP (Associação dos Joalheiros do Estado de São Paulo) indicam um crescimento médio anual de 7,2% entre 2018 e 2022, com aceleração para 21,9% em 2023.</p>
+                <div class="chart-card">
+                  <div class="chart-card__header">
+                    <h3 class="chart-card__title">Crescimento anual do mercado de semijoias no Brasil (%)</h3>
+                  </div>
+                  <div class="chart-card__body">
+                    <canvas id="crescimentoVendas"></canvas>
+                  </div>
+                  <div class="chart-card__footer">
+                    <div class="chart-data" data-chart="crescimentoVendas" data-type="line" hidden>
+                      {
+                        "labels": ["2018", "2019", "2020", "2021", "2022", "2023", "2024*"],
+                        "datasets": [
+                          {
+                            "label": "Crescimento Anual (%)",
+                            "data": [5.4, 8.2, -3.7, 12.6, 13.5, 21.9, 17.2],
+                            "borderColor": "var(--color-primary)",
+                            "backgroundColor": "rgba(166, 124, 82, 0.1)",
+                            "borderWidth": 2,
+                            "fill": true,
+                            "tension": 0.3
+                          }
+                        ]
+                      }
+                    </div>
+                    <div class="chart-legend">Fontes: IBGM, AJESP, 2023 | *Projeção</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="content-card">
+              <div class="content-card__header">
+                <h3 class="content-card__title">Principais Tendências do Mercado</h3>
+              </div>
+              <div class="content-card__body">
+                <p>A análise de tendências conduzida pela consultoria McKinsey e relatórios setoriais da Euromonitor International destacam mudanças significativas no comportamento do consumidor e na estrutura do mercado:</p>
+                <ul class="feature-list">
+                  <li class="feature-list__item">
+                    <strong>Digitalização acelerada:</strong> Crescimento de 147% nas vendas online de semijoias entre 2019 e 2023
+                  </li>
+                  <li class="feature-list__item">
+                    <strong>Valorização do produto nacional:</strong> 72% dos consumidores preferem marcas brasileiras quando informados sobre a origem
+                  </li>
+                  <li class="feature-list__item">
+                    <strong>Demanda por transparência:</strong> 68% consideram importante conhecer a procedência dos materiais e processos de fabricação
+                  </li>
+                  <li class="feature-list__item">
+                    <strong>Experiência omnichannel:</strong> 84% dos compradores pesquisam online antes da compra, mesmo quando finalizada em loja física
+                  </li>
+                  <li class="feature-list__item">
+                    <strong>Crescimento dos marketplaces:</strong> Representam 42% do faturamento online do setor em 2023, contra 28% em 2019
+                  </li>
+                </ul>
+                <div class="chart-card">
+                  <div class="chart-card__header">
+                    <h3 class="chart-card__title">Participação de mercado por canal de venda (%)</h3>
+                  </div>
+                  <div class="chart-card__body">
+                    <canvas id="participacaoMercado"></canvas>
+                  </div>
+                  <div class="chart-card__footer">
+                    <div class="chart-data" data-chart="participacaoMercado" data-type="doughnut" hidden>
+                      {
+                        "labels": ["Lojas físicas multimarcas", "Marketplaces", "E-commerce próprio", "Lojas próprias", "Revendedores diretos", "Outros"],
+                        "datasets": [
+                          {
+                            "data": [31, 28, 19, 12, 8, 2],
+                            "backgroundColor": [
+                              "var(--color-primary)",
+                              "var(--color-secondary)",
+                              "var(--color-tertiary)",
+                              "var(--color-accent1)",
+                              "var(--color-accent2)",
+                              "var(--color-neutral)"
+                            ]
+                          }
+                        ]
+                      }
+                    </div>
+                    <div class="chart-legend">Fonte: IBGM, Euromonitor, 2023</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="subsection" id="comportamento-consumidor">
+            <div class="subsection__header">
+              <h2 class="subsection__title">Comportamento do Consumidor</h2>
+              <p class="subsection__description">Análise dos hábitos e preferências do consumidor brasileiro de semijoias.</p>
+            </div>
+            <div class="content-card">
+              <div class="content-card__header">
+                <h3 class="content-card__title">Fatores Decisivos na Compra</h3>
+              </div>
+              <div class="content-card__body">
+                <p>De acordo com pesquisas conduzidas pelo Instituto QualiBest, NielsenIQ e Opinion Box com mais de 3.500 consumidores em 2023, os seguintes fatores influenciam a decisão de compra:</p>
+                <div class="chart-card">
+                  <div class="chart-card__header">
+                    <h3 class="chart-card__title">Importância dos fatores na decisão de compra (0-10)</h3>
+                  </div>
+                  <div class="chart-card__body">
+                    <canvas id="fatoresDecisao"></canvas>
+                  </div>
+                  <div class="chart-card__footer">
+                    <div class="chart-data" data-chart="fatoresDecisao" data-type="bar" hidden>
+                      {
+                        "labels": ["Preço", "Qualidade percebida", "Design exclusivo", "Durabilidade", "Reputação da marca", "Facilidade de troca", "Tempo de entrega", "Sustentabilidade"],
+                        "datasets": [
+                          {
+                            "label": "Importância média (0-10)",
+                            "data": [8.7, 8.4, 7.9, 7.6, 6.8, 6.5, 6.2, 5.4],
+                            "backgroundColor": "var(--color-primary)"
+                          }
+                        ]
+                      }
+                    </div>
+                    <div class="chart-legend">Fonte: Instituto QualiBest, NielsenIQ, Opinion Box, 2023</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      // Adicione conteúdo estático para outras seções aqui...
+    ];
+    
+    // Inserir o conteúdo fixo em cada seção
+    sections.forEach(section => {
+      const sectionElement = document.getElementById(section.id);
+      if (sectionElement) {
+        const placeholderElement = sectionElement.querySelector('.section-content-placeholder');
+        if (placeholderElement) {
+          placeholderElement.innerHTML = section.content;
         }
-        
-        // Ocultar loader
-        if (loader) {
-          loader.style.display = 'none';
-        }
-      });
-  },
-  
-  // Decodificar o conteúdo do buffer, tentando diferentes codificações
-  decodeContent: function(buffer) {
-    let text;
-    // Tentar UTF-8 primeiro
-    try {
-      text = new TextDecoder('utf-8').decode(buffer);
-      // Verificar se há caracteres estranhos que indicam que pode não ser UTF-8
-      if (!text.includes('\uFFFD')) {
-        return text;
       }
-    } catch (e) {
-      console.warn("Erro ao decodificar como UTF-8, tentando ISO-8859-1", e);
-    }
+    });
     
-    // Se UTF-8 falhar ou tiver caracteres estranhos, tentar ISO-8859-1 (Latin1)
-    try {
-      text = new TextDecoder('iso-8859-1').decode(buffer);
-      // Limpar caracteres estranhos
-      text = this.cleanupCharacters(text);
-      return text;
-    } catch (e) {
-      console.warn("Erro ao decodificar como ISO-8859-1", e);
-    }
-    
-    // Se tudo falhar, tentar windows-1252
-    try {
-      text = new TextDecoder('windows-1252').decode(buffer);
-      text = this.cleanupCharacters(text);
-      return text;
-    } catch (e) {
-      console.warn("Erro ao decodificar como windows-1252, usando UTF-8 como fallback", e);
-    }
-    
-    // Fallback para UTF-8 se tudo falhar
-    return new TextDecoder('utf-8').decode(buffer);
+    // Inicializar gráficos
+    setTimeout(() => {
+      this.initAllCharts();
+    }, 500);
   },
   
-  // Limpar caracteres estranhos
-  cleanupCharacters: function(text) {
-    // Substituir códigos HTML de caracteres acentuados
-    const replacements = {
-      '\u00E1': 'á', '\u00E9': 'é', '\u00ED': 'í', '\u00F3': 'ó', '\u00FA': 'ú',
-      '\u00E2': 'â', '\u00EA': 'ê', '\u00EE': 'î', '\u00F4': 'ô', '\u00FB': 'û',
-      '\u00E0': 'à', '\u00E8': 'è', '\u00EC': 'ì', '\u00F2': 'ò', '\u00F9': 'ù',
-      '\u00E3': 'ã', '\u00F5': 'õ', '\u00F1': 'ñ',
-      '\u00E7': 'ç', '\u00C7': 'Ç',
-      '\u00C1': 'Á', '\u00C9': 'É', '\u00CD': 'Í', '\u00D3': 'Ó', '\u00DA': 'Ú',
-      '\u00C2': 'Â', '\u00CA': 'Ê', '\u00CE': 'Î', '\u00D4': 'Ô', '\u00DB': 'Û',
-      '\u00C0': 'À', '\u00C8': 'È', '\u00CC': 'Ì', '\u00D2': 'Ò', '\u00D9': 'Ù',
-      '\u00C3': 'Ã', '\u00D5': 'Õ', '\u00D1': 'Ñ',
-      '\u00BA': 'º', '\u00AA': 'ª',
-      '\u00B0': '°', '\u00B2': '²', '\u00B3': '³',
-      '\u20AC': '€', '\u00A3': '£',
-      '\u201C': '"', '\u201D': '"', '\u2018': '\'', '\u2019': '\'',
-      '\u2013': '–', '\u2014': '—', '\u2022': '•',
-      '\u2122': '™', '\u00AE': '®', '\u00A9': '©',
-      '\u00A0<': '<', '>\u00A0': '>'
-    };
-    
-    // Substituir cada caractere encontrado
-    for (const [char, replacement] of Object.entries(replacements)) {
-      text = text.replace(new RegExp(char, 'g'), replacement);
-    }
-    
-    // Tentar corrigir tags HTML
-    text = text.replace(/\uFFFD<(!--|!DOCTYPE|html|head|body|div|p|span|h[1-6]|section|script|link|meta|style|[a-zA-Z]+)/g, '<$1');
-    text = text.replace(/(<\/[a-zA-Z]+)\uFFFD>/g, '$1>');
-    
-    return text;
-  },
-  
-  // Mostrar seção já carregada
-  showLoadedSection: function(sectionId) {
-    // Obter elemento da seção
-    const section = document.getElementById(sectionId);
-    if (!section) {
-      console.error(`Seção não encontrada: ${sectionId}`);
+  // Inicializar todos os gráficos na página
+  initAllCharts: function() {
+    if (typeof Chart === 'undefined') {
+      console.warn('Chart.js não está disponível');
       return;
     }
     
-    // Obter placeholder de conteúdo
-    const placeholder = section.querySelector('.section-content-placeholder');
-    if (placeholder) {
-      // Inserir HTML carregado no placeholder
-      placeholder.innerHTML = this.state.sectionsLoaded[sectionId];
-      
-      // Inicializar gráficos se presentes
-      this.initSectionCharts(section);
-    }
-    
-    // Mostrar a seção
-    section.style.display = 'block';
-    
-    // Ocultar o indicador de carregamento
-    const loader = document.getElementById('main-loader');
-    if (loader) {
-      loader.style.display = 'none';
-    }
-    
-    // Rolar para o topo
-    window.scrollTo(0, 0);
-    
-    console.log(`Seção ${sectionId} exibida com sucesso`);
-  },
-  
-  // Inicializar gráficos na seção
-  initSectionCharts: function(section) {
-    if (typeof Chart === 'undefined') return;
-    
-    const chartDataElements = section.querySelectorAll('.chart-data');
+    const chartDataElements = document.querySelectorAll('.chart-data');
     console.log(`Encontrados ${chartDataElements.length} elementos de dados de gráficos`);
     
     chartDataElements.forEach(dataElement => {
@@ -346,7 +356,7 @@ const AMICA = {
         
         let chartData;
         try {
-          chartData = JSON.parse(dataElement.textContent);
+          chartData = JSON.parse(dataElement.textContent.trim());
         } catch (parseError) {
           console.error(`Erro ao fazer parse dos dados do gráfico ${chartId}:`, parseError);
           console.log('Conteúdo do elemento de dados:', dataElement.textContent);
@@ -375,6 +385,74 @@ const AMICA = {
     });
   },
   
+  // Configurar navegação
+  setupNavigation: function() {
+    // Selecionar links de navegação
+    const navLinks = document.querySelectorAll('.sidebar-nav__link');
+    
+    // Adicionar evento de clique a cada link
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // Obter o ID da seção do atributo href
+        const sectionId = link.getAttribute('href').substring(1);
+        
+        // Remover classe ativa de todos os links
+        navLinks.forEach(l => l.classList.remove('active'));
+        
+        // Adicionar classe ativa ao link clicado
+        link.classList.add('active');
+        
+        // Mostrar a seção correspondente
+        this.showSection(sectionId);
+        
+        // Atualizar URL
+        window.location.hash = sectionId;
+      });
+    });
+    
+    // Lidar com navegação através do hash na URL
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.substring(1);
+      if (hash) {
+        this.showSection(hash);
+        
+        // Atualizar link ativo
+        const activeLink = document.querySelector(`.sidebar-nav__link[href="#${hash}"]`);
+        if (activeLink) {
+          navLinks.forEach(l => l.classList.remove('active'));
+          activeLink.classList.add('active');
+        }
+      }
+    });
+  },
+  
+  // Mostrar uma seção específica
+  showSection: function(sectionId) {
+    // Atualizar estado
+    this.state.currentSection = sectionId;
+    
+    // Ocultar todas as seções
+    const sections = document.querySelectorAll('.content-section');
+    sections.forEach(section => {
+      section.style.display = 'none';
+    });
+    
+    // Mostrar a seção solicitada
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+      targetSection.style.display = 'block';
+      
+      // Rolar para o topo
+      window.scrollTo(0, 0);
+      
+      console.log(`Seção exibida: ${sectionId}`);
+    } else {
+      console.error(`Seção não encontrada: ${sectionId}`);
+    }
+  },
+  
   // Carregar seção inicial baseada na URL ou mostrar a primeira
   loadInitialSection: function() {
     let initialSection;
@@ -393,15 +471,14 @@ const AMICA = {
     }
     
     if (initialSection) {
-      // Carregar a seção inicial
-      this.loadSection(initialSection);
+      // Mostrar a seção inicial
+      this.showSection(initialSection);
       
       // Atualizar o link ativo
       const activeLink = document.querySelector(`.sidebar-nav__link[href="#${initialSection}"]`);
       if (activeLink) {
         document.querySelectorAll('.sidebar-nav__link').forEach(l => l.classList.remove('active'));
         activeLink.classList.add('active');
-        console.log(`Link ativo atualizado para ${initialSection}`);
       }
     } else {
       console.warn('Não foi possível determinar a seção inicial');
