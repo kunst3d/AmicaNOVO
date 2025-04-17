@@ -1,0 +1,27 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# REGRAS:
+
+- Siga as Instrucoes contidas em [Instrucoes.md](mdc:outros/Instrucoes.md) !!!!
+- Ao criar novo conteudo para o projeto, siga a risca TODOS os dados e textos contidos em [Relatorio.md](mdc:outros/Relatorio.md) !!!!
+- Sempre siga a abordagem mobile-first em todos os componentes CSS - desenvolva primeiro para dispositivos móveis e depois adapte para telas maiores.
+- Mantenha todas as variáveis de design (cores, espaçamentos, tipografia) centralizadas em [base.css](mdc:assets/css/base.css) e nunca defina valores fixos nos outros arquivos.
+- Implemente rigorosamente a hierarquia visual estabelecida em [sections.css](mdc:assets/css/sections.css) para todos os títulos e subtítulos, sem exceções.
+- Jamais crie novos componentes sem antes verificar se já existe um componente similar que possa ser adaptado.
+- Respeite os breakpoints definidos (768px, 1024px, 1440px) e evite criar pontos de quebra personalizados sem necessidade absoluta.
+- Implemente todas as visualizações de dados estritamente na ordem de prioridade estabelecida na seção 6.2 do documento de instruções.
+- Mantenha a separação clara entre estrutura (HTML), apresentação (CSS) e comportamento (JavaScript) em todos os componentes.
+- Padronize todos os nomes de classes CSS seguindo a metodologia BEM (Block, Element, Modifier) sem exceções.
+- Otimize todas as imagens e assets antes de integrá-los ao projeto, mantendo o tempo de carregamento sob controle.
+- Armazene todos os textos estáticos em constantes ou arquivos de tradução, mesmo que o projeto inicial tenha apenas um idioma.
+- Implemente lazy loading para todos os conteúdos abaixo da dobra, especialmente para visualizações de dados complexas.
+- Nunca modifique diretamente o framework Chart.js - crie wrappers e configurações personalizadas em [charts.js](mdc:assets/js/charts.js).
+- Documente qualquer desvio da especificação original, por menor que seja, incluindo justificativa técnica.
+- Mantenha o código JavaScript modularizado, com funções de no máximo 25 linhas e responsabilidades claramente definidas.
+- Implemente transições e animações com duração máxima de 300ms para manter a interface responsiva.
+- Certifique-se de que todas as tabelas tenham alternativas visuais em dispositivos móveis - scroll horizontal não é suficiente.
+- Priorize performance sobre efeitos visuais - simplificar é melhor que adicionar elementos desnecessários.

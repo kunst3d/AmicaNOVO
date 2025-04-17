@@ -99,6 +99,17 @@ function setupNavigation() {
 
 // Carregar o conteúdo de uma seção específica
 function loadSectionContent(sectionId) {
+  if (appState.isGitHubPages) {
+    if (appState.debug) console.log(`GitHub Pages detectado: Carregamento de conteúdo dinâmico ignorado para ${sectionId}. Usando github-compatibility.js.`);
+    contentSections.forEach(section => {
+      section.style.display = (section.id === sectionId) ? 'block' : 'none';
+    });
+    sectionLinks.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href').substring(1) === sectionId);
+    });
+    return;
+  }
+
   if (appState.debug) console.log(`Carregando conteúdo para seção: ${sectionId}`);
   
   // Atualizar estado da aplicação
@@ -145,7 +156,32 @@ function loadSectionContent(sectionId) {
   
   if (appState.debug) console.log(`Carregando arquivo: ${filePath}`);
   
-  // Buscar o conteúdo
+  // MODIFICAÇÃO: Se estiver usando protocolo file://, tente usar XMLHttpRequest com fallback para conteúdo estático
+  if (appState.isFileProtocol) {
+    try {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', filePath, true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            if (appState.debug) console.log(`XMLHttpRequest: Conteúdo recebido para ${sectionId}, processando...`);
+            insertContent(xhr.responseText, contentPlaceholder, sectionId);
+            appState.loadedSections[sectionId] = true;
+          } else {
+            // Falha, tentar carregar conteúdo estático
+            loadStaticFallbackContent(sectionId, contentPlaceholder);
+          }
+        }
+      };
+      xhr.send();
+    } catch (e) {
+      console.error("Erro ao usar XMLHttpRequest:", e);
+      loadStaticFallbackContent(sectionId, contentPlaceholder);
+    }
+    return;
+  }
+  
+  // Buscar o conteúdo via fetch (para HTTP)
   fetch(filePath)
     .then(response => {
       if (!response.ok) {
@@ -170,21 +206,81 @@ function loadSectionContent(sectionId) {
     .catch(error => {
       console.error(`Erro ao carregar conteúdo para ${sectionId}:`, error);
       
-      // Exibir mensagem de erro
-      contentPlaceholder.innerHTML = `
-        <div class="error-message">
-          <h3>Erro ao carregar conteúdo</h3>
-          <p>${error.message}</p>
-          <p>Verifique sua conexão com a internet e tente novamente. Se o problema persistir, 
-          considere executar o relatório localmente usando um servidor HTTP.</p>
-        </div>
-      `;
-      
-      // Mostrar o aviso de protocolo file:// se esse for o problema
-      if (appState.isFileProtocol && fileProtocolNotice) {
-        fileProtocolNotice.style.display = 'block';
-      }
+      // Tentar abordagem alternativa com conteúdo estático
+      loadStaticFallbackContent(sectionId, contentPlaceholder);
     });
+}
+
+// NOVA FUNÇÃO: Carregar conteúdo estático de fallback para protocolo file://
+function loadStaticFallbackContent(sectionId, contentPlaceholder) {
+  if (appState.debug) console.log(`Usando conteúdo estático para ${sectionId}`);
+  
+  // Conteúdo estático para cada seção
+  const staticContents = {
+    'sumario-executivo': `
+      <div class="subsection">
+        <div class="subsection__header">
+          <h2 class="subsection__title">Sumário Executivo</h2>
+        </div>
+        <div class="content-card">
+          <div class="content-card__body">
+            <p>O mercado de semijoias no Brasil apresenta crescimento constante, com projeção de expansão contínua até 2030. 
+            A Amica tem a oportunidade de se posicionar como marca premium focada em qualidade e sustentabilidade.</p>
+            
+            <p>Este relatório recomenda uma estratégia digital multicanal, priorizando marketplace para entrada rápida no mercado e
+            desenvolvimento simultâneo de presença própria em redes sociais e e-commerce.</p>
+          </div>
+        </div>
+      </div>
+    `,
+    'analise-mercado': `
+      <div class="subsection">
+        <div class="subsection__header">
+          <h2 class="subsection__title">Crescimento do Mercado</h2>
+        </div>
+        <div class="content-card">
+          <div class="content-card__body">
+            <p>O mercado de semijoias no Brasil cresceu consistentemente nos últimos anos, apresentando taxa média de crescimento anual de 8,5% 
+            entre 2017 e 2023, mesmo com os desafios da pandemia.</p>
+            <p>As projeções indicam continuação deste crescimento, impulsionado pela valorização do consumo consciente e pela busca
+            por acessórios que combinem qualidade e preço acessível.</p>
+          </div>
+        </div>
+      </div>
+    `,
+    'analise-concorrencia': `
+      <div class="subsection">
+        <div class="subsection__header">
+          <h2 class="subsection__title">Análise Competitiva</h2>
+        </div>
+        <div class="content-card">
+          <div class="content-card__body">
+            <p>O mercado de semijoias está segmentado entre marcas premium estabelecidas (Vivara, Pandora), 
+            marcas digitais de crescimento acelerado (Francisca Joias, Lolla) e marcas de nicho sustentável.</p>
+            <p>Oportunidade para a Amica: desenvolver posicionamento claro que combine qualidade premium com 
+            valores de sustentabilidade, diferenciando-se com design contemporâneo e responsabilidade ambiental.</p>
+          </div>
+        </div>
+      </div>
+    `,
+    // Adicione conteúdo para as outras seções seguindo o mesmo padrão
+  };
+  
+  // Inserir conteúdo estático ou mensagem de fallback
+  if (staticContents[sectionId]) {
+    contentPlaceholder.innerHTML = staticContents[sectionId];
+    appState.loadedSections[sectionId] = true;
+  } else {
+    contentPlaceholder.innerHTML = `
+      <div class="error-message">
+        <h3>Conteúdo não disponível no modo offline</h3>
+        <p>Esta seção não está disponível quando o relatório é acessado diretamente pelo sistema de arquivos.</p>
+        <p>Para visualizar o conteúdo completo, utilize um servidor HTTP local:</p>
+        <pre>python -m http.server 8000</pre>
+        <p>Depois acesse: <code>http://localhost:8000</code> em seu navegador.</p>
+      </div>
+    `;
+  }
 }
 
 // Inserir conteúdo na seção

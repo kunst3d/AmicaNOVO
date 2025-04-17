@@ -13,7 +13,8 @@ const AMICA = {
     defaultTransition: 'ease',
     mobileBreakpoint: 768,
     tabletBreakpoint: 1024,
-    desktopBreakpoint: 1440
+    desktopBreakpoint: 1440,
+    debugMode: true // Habilita logs detalhados no console
   },
   
   // Estado da aplicação
@@ -22,12 +23,14 @@ const AMICA = {
     isMobile: window.innerWidth < 768,
     navOpen: false,
     dataLoaded: false,
-    isFileProtocol: window.location.protocol === 'file:'
+    isFileProtocol: window.location.protocol === 'file:',
+    isGitHubPages: window.location.hostname.includes('github.io'),
+    hasFixedFileProtocolIssue: false // Flag para controlar se já tentamos resolver problemas de protocolo file://
   },
   
   // Inicialização da aplicação
   init: function() {
-    console.log('Inicializando Relatório Amica...');
+    if (this.config.debugMode) console.log('Inicializando Relatório Amica...');
     
     // Verificar ambiente
     this.checkEnvironment();
@@ -44,7 +47,7 @@ const AMICA = {
     // Inicializar componentes
     document.dispatchEvent(new CustomEvent('amica:init'));
     
-    console.log('Aplicação inicializada com sucesso!');
+    if (this.config.debugMode) console.log('Aplicação inicializada com sucesso!');
   },
   
   // Verificar ambiente de execução
@@ -58,9 +61,41 @@ const AMICA = {
       // Adicionar classe para estilização específica
       document.body.classList.add('is-file-protocol');
       
+      // Configurar compatibilidade com protocolo file://
+      this.setupFileProtocolCompatibility();
+      
       // Disparar evento para possíveis ajustes em outros módulos
       document.dispatchEvent(new CustomEvent('amica:fileProtocolDetected'));
     }
+    
+    // Verificar se está no GitHub Pages
+    if (this.state.isGitHubPages) {
+      document.body.classList.add('is-github-pages');
+      if (this.config.debugMode) console.log('GitHub Pages detectado, modo de compatibilidade será aplicado');
+    }
+  },
+  
+  // Configurar compatibilidade com protocolo file://
+  setupFileProtocolCompatibility: function() {
+    // Se já foi consertado, não fazer novamente
+    if (this.state.hasFixedFileProtocolIssue) return;
+    
+    // Mostrar aviso de protocolo file://
+    const fileProtocolWarning = document.querySelector('.file-protocol-warning');
+    if (fileProtocolWarning) {
+      fileProtocolWarning.style.display = 'block';
+    }
+    
+    // Mostrar aviso de importante
+    const importantNotice = document.querySelector('.important-notice');
+    if (importantNotice) {
+      importantNotice.style.display = 'block';
+    }
+    
+    // Marcar como consertado
+    this.state.hasFixedFileProtocolIssue = true;
+    
+    if (this.config.debugMode) console.log('Configuração de compatibilidade para protocolo file:// aplicada');
   },
   
   // Detectar tipo de dispositivo
@@ -103,7 +138,7 @@ const AMICA = {
   // Carregar dados iniciais
   loadInitialData: function() {
     // Aqui poderíamos carregar dados JSON ou outras configurações
-    console.log('Carregando dados iniciais...');
+    if (this.config.debugMode) console.log('Carregando dados iniciais...');
     
     // Simular carregamento
     setTimeout(() => {
