@@ -7,6 +7,7 @@ const ChartUtils = {
      * @returns {Array} - Paleta de cores
      */
     getColorPalette: function() {
+        // Paleta mais vibrante por padrão
         const defaultPalette = [
             '#4e79a7', '#f28e2c', '#e15759', '#76b7b2', '#59a14f',
             '#edc949', '#af7aa1', '#ff9da7', '#9c755f', '#bab0ab'
@@ -101,26 +102,30 @@ const ChartUtils = {
                 if (dataset.data && Array.isArray(dataset.data)) {
                     console.log(`Tipo de gráfico ${chartType} com ${dataset.data.length} segmentos`);
                     
-                    // CORREÇÃO: Aplicar cores sólidas (não usar alpha/transparência)
+                    // Aplicar cores mais vibrantes para segmentos (80% opacidade para melhor visualização)
                     dataset.backgroundColor = dataset.data.map((_, dataIndex) => {
                         const color = palette[dataIndex % palette.length];
-                        console.log(`Segmento ${dataIndex}: cor ${color}`);
-                        return color; // Cores sólidas para melhor visualização
+                        return this.hexToRgba(color, 0.8); // Usar 80% opacidade para melhor visual
                     });
                     
-                    // Usar bordas brancas para contraste
-                    dataset.borderColor = '#ffffff';
-                    dataset.borderWidth = 2;
+                    // Definir bordas para dar melhor contorno aos segmentos
+                    dataset.borderColor = dataset.data.map((_, dataIndex) => {
+                        return palette[dataIndex % palette.length]; // Cor sólida para borda
+                    });
+                    dataset.borderWidth = dataset.borderWidth || 1.5;
                     
-                    // Melhorar a interatividade
+                    // Melhorar a interatividade no hover
                     dataset.hoverBackgroundColor = dataset.data.map((_, dataIndex) => {
                         // Destacar no hover com cor ligeiramente mais brilhante
                         const color = palette[dataIndex % palette.length];
-                        return this.brightenColor(color, 20);
+                        return this.brightenColor(color, 15);
                     });
                     dataset.hoverBorderColor = '#ffffff';
-                    dataset.hoverBorderWidth = 3;
-                    dataset.hoverOffset = 10;
+                    dataset.hoverBorderWidth = 2;
+                    dataset.hoverOffset = 10; // Aumentar deslocamento no hover
+                    
+                    // Registrar cores aplicadas para debug
+                    console.log(`Cores aplicadas ao dataset para ${chartType}:`, dataset.backgroundColor);
                 }
             } 
             // Caso geral para gráficos de barra
@@ -211,21 +216,40 @@ const ChartUtils = {
         // Garantir que as opções existam
         config.options = config.options || {};
         
-        // Responsividade básica
+        // Melhorar responsividade
         config.options.responsive = true;
         config.options.maintainAspectRatio = false;
+        
+        // Definir altura mínima para o container (prevenção de gráficos muito pequenos)
+        if (['pie', 'doughnut'].includes(config.type)) {
+            // Gráficos circulares precisam de mais espaço vertical
+            config.options.aspectRatio = 1;
+        } else {
+            // Outros tipos de gráficos
+            config.options.aspectRatio = window.innerWidth < 768 ? 1 : 2;
+        }
         
         // Melhorar as legendas
         config.options.plugins = config.options.plugins || {};
         config.options.plugins.legend = config.options.plugins.legend || {};
-        config.options.plugins.legend.position = config.options.plugins.legend.position || 'top';
+        
+        // Posição da legenda adaptativa ao tipo de dispositivo
+        const isMobile = window.innerWidth < 768;
+        if (['pie', 'doughnut'].includes(config.type)) {
+            config.options.plugins.legend.position = isMobile ? 'bottom' : 'right';
+        } else {
+            config.options.plugins.legend.position = isMobile ? 'bottom' : 'top';
+        }
+        
+        // Melhorar tooltips
+        config.options.plugins.tooltip = config.options.plugins.tooltip || {};
         
         // Configuração específica por tipo de gráfico
         if (['pie', 'doughnut'].includes(config.type)) {
             // Manter legenda visível em gráficos circulares
             config.options.plugins.legend.display = true;
-            // Adicionar labels aos gráficos circulares
-            config.options.plugins.tooltip = config.options.plugins.tooltip || {};
+            
+            // Adicionar labels com percentagens aos gráficos circulares
             config.options.plugins.tooltip.callbacks = config.options.plugins.tooltip.callbacks || {};
             config.options.plugins.tooltip.callbacks.label = function(context) {
                 const label = context.label || '';
@@ -234,6 +258,17 @@ const ChartUtils = {
                 const percentage = Math.round((context.raw / total) * 100);
                 return `${label}: ${value} (${percentage}%)`;
             };
+            
+            // Melhorar layout para pie/doughnut em dispositivos móveis
+            if (isMobile) {
+                config.options.layout = config.options.layout || {};
+                config.options.layout.padding = {
+                    top: 10,
+                    right: 10,
+                    bottom: 10,
+                    left: 10
+                };
+            }
         }
         
         return config;
@@ -262,7 +297,19 @@ const ChartUtils = {
         config = this.improveResponsiveness(config);
         
         try {
-            return new Chart(canvas, config);
+            // Criar e retornar a instância do gráfico
+            const chart = new Chart(canvas, config);
+            
+            // Adicionar listener para redimensionamento (adaptação a orientação e tamanho de tela)
+            window.addEventListener('resize', () => {
+                if (chart) {
+                    setTimeout(() => {
+                        chart.resize();
+                    }, 100);
+                }
+            });
+            
+            return chart;
         } catch (error) {
             console.error('Erro ao criar gráfico:', error);
             return null;
