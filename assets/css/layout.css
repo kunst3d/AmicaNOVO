@@ -110,7 +110,9 @@
 /* Layout da página principal */
 .app-container {
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  position: relative;
 }
 
 .main-nav {
@@ -271,4 +273,19 @@
   border-radius: 4px;
   font-family: monospace;
   margin: 0 0.25rem;
+}
+
+/* Ajuste para mobile e GitHub Pages notice */
+body:has(.github-notice[style="display: block;"]) .mobile-menu-toggle {
+  top: 40px;
+}
+
+/* Ajuste para modo local notice */
+body:has(.local-notice[style="display: block;"]) .mobile-menu-toggle {
+  top: 40px;
+}
+
+/* Quando ambos os avisos estiverem ativos */
+body:has(.github-notice[style="display: block;"]):has(.local-notice[style="display: block;"]) .mobile-menu-toggle {
+  top: 80px;
 }

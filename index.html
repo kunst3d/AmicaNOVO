@@ -73,8 +73,15 @@
     </div>
     
     <div class="app-container">
+        <!-- Botão hamburger para mobile -->
+        <button id="mobile-menu-toggle" class="mobile-menu-toggle">
+            <span class="mobile-menu-toggle__line"></span>
+            <span class="mobile-menu-toggle__line"></span>
+            <span class="mobile-menu-toggle__line"></span>
+        </button>
+        
         <!-- Navegação -->
-        <nav class="main-nav">
+        <nav class="main-nav" id="main-nav">
             <div class="sidebar__header">
                 <div class="sidebar__logo">
                     <h1 class="nav-logo__text">Amica</h1>
@@ -251,6 +258,28 @@
                     AmicaCharts.initSectionCharts(e.detail.sectionId);
                 }
             }, 500);
+        });
+        
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const mainNav = document.getElementById('main-nav');
+            
+            if (mobileMenuToggle && mainNav) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    mainNav.classList.toggle('active');
+                    mobileMenuToggle.classList.toggle('active');
+                });
+                
+                // Fechar menu ao clicar em um link
+                const navLinks = mainNav.querySelectorAll('.sidebar-nav__link');
+                navLinks.forEach(function(link) {
+                    link.addEventListener('click', function() {
+                        mainNav.classList.remove('active');
+                        mobileMenuToggle.classList.remove('active');
+                    });
+                });
+            }
         });
     </script>
 </body>
