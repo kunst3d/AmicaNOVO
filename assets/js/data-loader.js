@@ -38,7 +38,7 @@ const sectionContentMapping = {
 
 // Função para inicializar o carregador de conteúdo
 function initializeContentLoader() {
-  if (appState.isGitHubPages) {
+  if (window.location.hostname.includes('github.io')) {
     if (appState.debug) console.log('GitHub Pages detectado: initializeContentLoader ignorado.');
     return;
   }
@@ -104,7 +104,7 @@ function setupNavigation() {
 
 // Carregar o conteúdo de uma seção específica
 function loadSectionContent(sectionId) {
-  if (appState.isGitHubPages) {
+  if (window.location.hostname.includes('github.io')) {
     if (appState.debug) console.log(`GitHub Pages detectado: Carregamento de conteúdo dinâmico ignorado para ${sectionId}. Usando github-compatibility.js.`);
     contentSections.forEach(section => {
       section.style.display = (section.id === sectionId) ? 'block' : 'none';

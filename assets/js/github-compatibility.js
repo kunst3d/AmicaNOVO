@@ -265,8 +265,8 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         <div class="content-card">
           <div class="content-card__body">
-            <p>Esta seção está sendo exibida no modo de compatibilidade do GitHub Pages.</p>
-            <p>Para visualizar todos os recursos interativos e conteúdo completo, baixe o repositório e execute-o localmente.</p>
+            <p>O conteúdo para esta seção não está disponível nesta visualização.</p>
+            <p>Por favor, selecione outra seção no menu lateral.</p>
           </div>
         </div>
       </div>
@@ -309,33 +309,16 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Inicializar o modo de compatibilidade
   function initCompatibilityMode() {
-    // Adicionar uma mensagem de aviso
-    const notice = document.createElement('div');
-    notice.className = 'compatibility-notice';
-    notice.innerHTML = `
-      <h3>Modo de Visualização GitHub Pages</h3>
-      <p>Você está visualizando este relatório em modo de compatibilidade para GitHub Pages. Para acessar todas as 
-      funcionalidades interativas, recomendamos baixar o repositório e abri-lo localmente através de um servidor HTTP.</p>
-      <pre>
-# No terminal:
-git clone https://github.com/kunst3d/Amica-RelatorioNEW.git
-cd Amica-RelatorioNEW
-python -m http.server 8000
-
-# Depois acesse: http://localhost:8000
-      </pre>
-    `;
-    notice.style.backgroundColor = '#fff8e1';
-    notice.style.border = '1px solid #ffe082';
-    notice.style.borderRadius = '4px';
-    notice.style.padding = '15px';
-    notice.style.margin = '15px 0';
-    notice.style.fontSize = '14px';
+    // Remover o loading indicator imediatamente
+    const loadingIndicator = document.querySelector('.loading-indicator');
+    if (loadingIndicator) {
+      loadingIndicator.style.display = 'none';
+    }
     
-    const mainContent = document.querySelector('.main-content');
-    if (mainContent) {
-      // Inserir a mensagem no topo do conteúdo
-      mainContent.insertBefore(notice, mainContent.firstChild);
+    // Garantir que a navegação lateral esteja visível
+    const sidebar = document.querySelector('.main-nav');
+    if (sidebar) {
+      sidebar.style.display = 'block';
     }
     
     // Carregar todo o conteúdo diretamente
@@ -348,12 +331,6 @@ python -m http.server 8000
     const firstTab = document.querySelector('.sidebar-nav__link');
     if (firstTab) {
       firstTab.click();
-    }
-    
-    // Remover o loading indicator
-    const loadingIndicator = document.querySelector('.loading-indicator');
-    if (loadingIndicator) {
-      loadingIndicator.style.display = 'none';
     }
     
     if (debug) console.log('Modo de compatibilidade GitHub Pages inicializado com sucesso');

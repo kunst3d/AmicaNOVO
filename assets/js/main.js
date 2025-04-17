@@ -24,7 +24,7 @@ const AMICA = {
     navOpen: false,
     dataLoaded: false,
     isFileProtocol: window.location.protocol === 'file:',
-    isGitHubPages: window.location.hostname.includes('github.io'),
+    isGitHubPages: false,
     hasFixedFileProtocolIssue: false // Flag para controlar se já tentamos resolver problemas de protocolo file://
   },
   
@@ -32,8 +32,11 @@ const AMICA = {
   init: function() {
     if (this.config.debugMode) console.log('Inicializando Relatório Amica...');
     
-    // ---> ADIÇÃO: Se estiver no GitHub Pages, pular partes da inicialização padrão
-    if (this.state.isGitHubPages) {
+    // ---> ALTERAÇÃO: Verificação direta do hostname
+    const isGithubPages = window.location.hostname.includes('github.io');
+    this.state.isGitHubPages = isGithubPages; // Ainda mantemos a variável de estado para compatibilidade
+    
+    if (isGithubPages) {
       if (this.config.debugMode) console.log('GitHub Pages detectado: pulando inicialização padrão de eventos/dados em main.js');
       this.checkEnvironment(); // Ainda checar e adicionar classe
       this.detectDevice(); // Detectar mobile ainda é útil
@@ -42,7 +45,7 @@ const AMICA = {
       if (this.config.debugMode) console.log('Inicialização para GitHub Pages concluída em main.js.');
       return; // Interrompe a inicialização padrão
     }
-    // <--- FIM DA ADIÇÃO
+    // <--- FIM DA ALTERAÇÃO
     
     // Verificar ambiente
     this.checkEnvironment();

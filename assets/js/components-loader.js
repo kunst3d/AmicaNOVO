@@ -5,14 +5,20 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Carregar header
-    loadComponent('header-container', 'components/header.html');
-    
-    // Carregar footer
-    loadComponent('footer-container', 'components/footer.html');
-    
-    // Configurar componentes dinâmicos
-    setupDynamicComponents();
+    // ---> ADIÇÃO: Só inicializa se NÃO estiver no GitHub Pages
+    if (!window.location.hostname.includes('github.io')) {
+        // Carregar header
+        loadComponent('header-container', 'components/header.html');
+        
+        // Carregar footer
+        loadComponent('footer-container', 'components/footer.html');
+        
+        // Configurar componentes dinâmicos
+        setupDynamicComponents();
+    } else {
+        // console.log('Components Loader ignorado no modo GitHub Pages.'); // Log opcional
+    }
+    // <--- FIM DA ADIÇÃO
 });
 
 /**

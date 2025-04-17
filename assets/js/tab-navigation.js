@@ -110,5 +110,11 @@ const AmicaTabNavigation = (function() {
 
 // Inicializar quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', function() {
-  AmicaTabNavigation.init();
+  // ---> ADIÇÃO: Só inicializa se NÃO estiver no GitHub Pages
+  if (!window.location.hostname.includes('github.io')) {
+    AmicaTabNavigation.init();
+  } else {
+    // console.log('AmicaTabNavigation.init() ignorado no modo GitHub Pages.'); // Log opcional
+  }
+  // <--- FIM DA ADIÇÃO
 }); 

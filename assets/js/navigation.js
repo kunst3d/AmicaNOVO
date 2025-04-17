@@ -175,5 +175,11 @@ const AmicaNavigation = (function() {
 
 // Inicializar navegação quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', function() {
-  AmicaNavigation.init();
+  // ---> ADIÇÃO: Só inicializa se NÃO estiver no GitHub Pages
+  if (!window.location.hostname.includes('github.io')) {
+    AmicaNavigation.init();
+  } else {
+    // console.log('AmicaNavigation.init() ignorado no modo GitHub Pages.'); // Log opcional, pode ser removido
+  }
+  // <--- FIM DA ADIÇÃO
 });

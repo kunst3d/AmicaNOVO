@@ -234,13 +234,21 @@ const AmicaCharts = (function() {
 
 // Inicializar gráficos quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', function() {
-  AmicaCharts.init();
+  if (!window.location.hostname.includes('github.io')) {
+    AmicaCharts.init();
+  } else {
+    // console.log('AmicaCharts.init() ignorado no modo GitHub Pages.');
+  }
 });
 
 // Atualizar gráficos quando a seção muda
 document.addEventListener('amica:sectionChange', function(e) {
-  const sectionId = e.detail.section;
-  setTimeout(function() {
-    AmicaCharts.initSectionCharts(sectionId);
-  }, 100);
+  if (!window.location.hostname.includes('github.io')) {
+    const sectionId = e.detail.section;
+    setTimeout(function() {
+      AmicaCharts.initSectionCharts(sectionId);
+    }, 100);
+  } else {
+    // console.log('AmicaCharts.initSectionCharts() ignorado no modo GitHub Pages.'); // Log opcional
+  }
 });

@@ -110,6 +110,8 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  box-sizing: border-box;
+  font-size: 100%; /* 16px por padrão */
 }
 
 body {
@@ -397,4 +399,19 @@ small {
   padding: 0.2rem 0.4rem;
   border-radius: 3px;
   font-family: monospace;
+}
+
+/* Outros resets e estilos base */
+html {
+  box-sizing: border-box;
+  font-size: 100%; /* 16px por padrão */
+}
+
+/*
+Esconder avisos de protocolo file:// por padrão.
+O JavaScript (main.js) irá exibi-los se necessário.
+*/
+.file-protocol-warning,
+.important-notice {
+  display: none;
 }
