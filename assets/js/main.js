@@ -165,22 +165,25 @@ const AMICA = {
         let decoder;
         let htmlContent;
         
-        // Detectar BOM UTF-16 LE (ÿþ)
-        const bomCheck = new Uint8Array(buffer.slice(0, 2));
-        if (bomCheck[0] === 0xFF && bomCheck[1] === 0xFE) {
-            console.log(`Detectado BOM UTF-16 LE em ${sectionId}. Decodificando...`);
+        // Logar os primeiros bytes para diagnóstico
+        const firstBytes = new Uint8Array(buffer.slice(0, 4));
+        console.log(`[${sectionId}] Primeiros 4 bytes (hex): ${firstBytes[0].toString(16)}, ${firstBytes[1].toString(16)}, ${firstBytes[2].toString(16)}, ${firstBytes[3].toString(16)}`);
+        
+        // Detectar BOM UTF-16 LE (ÿþ - FF FE)
+        if (firstBytes[0] === 0xFF && firstBytes[1] === 0xFE) {
+            console.log(`[${sectionId}] Detectado BOM UTF-16 LE. Decodificando...`);
             // Usar UTF-16 LE e pular os 2 bytes do BOM
             decoder = new TextDecoder('utf-16le');
             htmlContent = decoder.decode(buffer.slice(2));
         } else {
             // Tentar UTF-8 primeiro
-            console.log(`Tentando decodificar ${sectionId} como UTF-8...`);
+            console.log(`[${sectionId}] Tentando decodificar como UTF-8...`);
             decoder = new TextDecoder('utf-8');
             htmlContent = decoder.decode(buffer); 
             
             // Fallback para Latin1 se UTF-8 falhar
             if (htmlContent.includes('\uFFFD')) { 
-                console.warn(`Detecção de caracteres inválidos em ${sectionId} com UTF-8. Tentando Latin1 (ISO-8859-1)...`);
+                console.warn(`[${sectionId}] Detecção de caracteres inválidos com UTF-8. Tentando Latin1 (ISO-8859-1)...`);
                 decoder = new TextDecoder('iso-8859-1');
                 htmlContent = decoder.decode(buffer);
             }
