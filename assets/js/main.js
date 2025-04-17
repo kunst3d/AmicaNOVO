@@ -410,7 +410,7 @@ const AMICA = {
           chartCanvas._chart.destroy();
         }
         
-        // Criar o gráfico usando ChartUtils (se disponível) ou diretamente
+        // Criar o gráfico usando AmicaCharts, ChartUtils ou diretamente
         if (typeof AmicaCharts !== 'undefined' && AmicaCharts.utils) {
           console.log(`[${sectionElement.id}] Usando AmicaCharts para criar gráfico ${chartId}`);
           
@@ -423,7 +423,60 @@ const AMICA = {
           console.log(`[${sectionElement.id}] Usando ChartUtils para criar gráfico ${chartId}`);
           chartCanvas._chart = ChartUtils.createChart(chartId, config);
         } else {
-          console.log(`[${sectionElement.id}] Usando Chart.js diretamente para criar gráfico ${chartId} (cores padrão)`);
+          console.log(`[${sectionElement.id}] Usando Chart.js diretamente para criar gráfico ${chartId} (aplicando cores básicas)`);
+          
+          // Solução simples para cores quando AmicaCharts não está disponível
+          if (config.type === 'pie' || config.type === 'doughnut') {
+            // Cores para gráficos de pizza/rosca
+            const pieColors = [
+              'rgba(255, 99, 132, 0.8)',    // Rosa
+              'rgba(54, 162, 235, 0.8)',    // Azul
+              'rgba(255, 206, 86, 0.8)',    // Amarelo
+              'rgba(75, 192, 192, 0.8)',    // Verde-água
+              'rgba(153, 102, 255, 0.8)',   // Roxo
+              'rgba(255, 159, 64, 0.8)',    // Laranja
+              'rgba(46, 204, 113, 0.8)',    // Verde
+              'rgba(52, 152, 219, 0.8)'     // Azul claro
+            ];
+            
+            config.data.datasets.forEach(dataset => {
+              const bgColors = [];
+              const borderColors = [];
+              
+              for (let i = 0; i < dataset.data.length; i++) {
+                bgColors.push(pieColors[i % pieColors.length]);
+                borderColors.push(pieColors[i % pieColors.length].replace('0.8', '1'));
+              }
+              
+              dataset.backgroundColor = bgColors;
+              dataset.borderColor = borderColors;
+              dataset.borderWidth = 2;
+            });
+          } else {
+            // Cores para outros gráficos (barras, linhas, radar)
+            const defaultColors = [
+              'rgba(166, 124, 82, 0.7)',   // Marrom
+              'rgba(42, 75, 69, 0.7)',     // Verde escuro
+              'rgba(101, 142, 133, 0.7)',  // Verde médio
+              'rgba(217, 194, 167, 0.7)',  // Bege
+              'rgba(191, 172, 143, 0.7)'   // Bege escuro
+            ];
+            
+            config.data.datasets.forEach((dataset, i) => {
+              const color = defaultColors[i % defaultColors.length];
+              const borderColor = color.replace('0.7', '1');
+              
+              if (config.type === 'radar') {
+                dataset.backgroundColor = color.replace('0.7', '0.2');
+              } else {
+                dataset.backgroundColor = color;
+              }
+              
+              dataset.borderColor = borderColor;
+              dataset.borderWidth = 1;
+            });
+          }
+          
           chartCanvas._chart = new Chart(chartCanvas, config);
         }
         
