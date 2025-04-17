@@ -233,7 +233,6 @@
     
     <!-- Gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="assets/js/chart-utils.js"></script>
     
     <!-- Scripts principais -->
     <script src="assets/js/github-compatibility.js"></script>
@@ -242,20 +241,14 @@
     <!-- Inicialização de gráficos -->
     <script src="assets/js/charts.js"></script>
     
-    <!-- Ferramentas de depuração e correção automática -->
-    <script src="assets/js/chart-debugger.js"></script>
-    <script src="assets/js/chart-fixer.js"></script>
-    
-    <!-- Script para auto-verificação de cores dos gráficos após carregamento -->
+    <!-- Script para carregamento de gráficos nas seções -->
     <script>
         document.addEventListener('amica:sectionLoaded', function(e) {
-            // Verificar cores após carregamento de seção
+            // Inicializar gráficos após o carregamento da seção
             setTimeout(function() {
-                if (e.detail.sectionId === 'publico-alvo') {
-                    console.log('Verificando cores dos gráficos na seção Público-Alvo...');
-                    if (window.ChartDebugger) {
-                        ChartDebugger.verificarCores();
-                    }
+                console.log(`Seção ${e.detail.sectionId} carregada, inicializando gráficos...`);
+                if (window.AmicaCharts && window.AmicaCharts.initSectionCharts) {
+                    AmicaCharts.initSectionCharts(e.detail.sectionId);
                 }
             }, 500);
         });
