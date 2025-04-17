@@ -412,7 +412,9 @@ const AmicaCharts = (function() {
     utils: {
       hexToRgba: hexToRgba,
       brightenColor: brightenColor,
-      getColorPalette: getColorPalette
+      getColorPalette: getColorPalette,
+      applyColors: applyColors,
+      improveResponsiveness: improveResponsiveness
     }
   };
 })();

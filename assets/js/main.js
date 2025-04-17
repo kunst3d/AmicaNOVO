@@ -411,11 +411,19 @@ const AMICA = {
         }
         
         // Criar o gráfico usando ChartUtils (se disponível) ou diretamente
-        if (typeof ChartUtils !== 'undefined') {
+        if (typeof AmicaCharts !== 'undefined' && AmicaCharts.utils) {
+          console.log(`[${sectionElement.id}] Usando AmicaCharts para criar gráfico ${chartId}`);
+          
+          // Aplicar cores e responsividade usando as funções incorporadas no AmicaCharts
+          config = AmicaCharts.utils.applyColors(config);
+          config = AmicaCharts.utils.improveResponsiveness(config);
+          
+          chartCanvas._chart = new Chart(chartCanvas, config);
+        } else if (typeof ChartUtils !== 'undefined') {
           console.log(`[${sectionElement.id}] Usando ChartUtils para criar gráfico ${chartId}`);
           chartCanvas._chart = ChartUtils.createChart(chartId, config);
         } else {
-          console.log(`[${sectionElement.id}] Usando Chart.js diretamente para criar gráfico ${chartId}`);
+          console.log(`[${sectionElement.id}] Usando Chart.js diretamente para criar gráfico ${chartId} (cores padrão)`);
           chartCanvas._chart = new Chart(chartCanvas, config);
         }
         
