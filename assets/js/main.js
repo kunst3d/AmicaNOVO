@@ -414,9 +414,77 @@ const AMICA = {
         if (typeof AmicaCharts !== 'undefined' && AmicaCharts.utils) {
           console.log(`[${sectionElement.id}] Usando AmicaCharts para criar gráfico ${chartId}`);
           
-          // Aplicar cores e responsividade usando as funções incorporadas no AmicaCharts
-          config = AmicaCharts.utils.applyColors(config);
-          config = AmicaCharts.utils.improveResponsiveness(config);
+          // Solução direta - aplicar cores e estilos manualmente
+          if (config.type === 'pie' || config.type === 'doughnut') {
+            // Cores para gráficos de pizza/rosca
+            const vibrantPalette = [
+              'rgba(255, 99, 132, 0.8)',    // Rosa
+              'rgba(54, 162, 235, 0.8)',    // Azul
+              'rgba(255, 206, 86, 0.8)',    // Amarelo
+              'rgba(75, 192, 192, 0.8)',    // Verde-água
+              'rgba(153, 102, 255, 0.8)',   // Roxo
+              'rgba(255, 159, 64, 0.8)',    // Laranja
+              'rgba(46, 204, 113, 0.8)',    // Verde
+              'rgba(52, 152, 219, 0.8)'     // Azul claro
+            ];
+            
+            config.data.datasets.forEach(function(dataset) {
+              const bgColors = [];
+              const borderColors = [];
+              
+              for (let i = 0; i < dataset.data.length; i++) {
+                bgColors.push(vibrantPalette[i % vibrantPalette.length]);
+                borderColors.push(vibrantPalette[i % vibrantPalette.length].replace('0.8', '1'));
+              }
+              
+              dataset.backgroundColor = bgColors;
+              dataset.borderColor = borderColors;
+              dataset.borderWidth = dataset.borderWidth || 2;
+              dataset.hoverOffset = 15;
+            });
+            
+            // Ajustes para mobile
+            if (window.innerWidth < 768) {
+              config.options = config.options || {};
+              config.options.plugins = config.options.plugins || {};
+              config.options.plugins.legend = config.options.plugins.legend || {};
+              config.options.plugins.legend.position = 'bottom';
+            }
+          } else {
+            // Para outros tipos de gráficos
+            const palette = AmicaCharts.utils.getColorPalette ? 
+                           AmicaCharts.utils.getColorPalette() : 
+                           [
+                             'rgb(166, 124, 82)',  // marrom
+                             'rgb(42, 75, 69)',    // verde escuro
+                             'rgb(217, 194, 167)', // bege
+                             'rgb(101, 142, 133)', // verde médio
+                             'rgb(191, 172, 143)'  // bege escuro
+                           ];
+                           
+            config.data.datasets.forEach(function(dataset, i) {
+              const baseColor = palette[i % palette.length];
+              
+              if (config.type === 'bar') {
+                dataset.backgroundColor = AmicaCharts.utils.hexToRgba ? 
+                                         AmicaCharts.utils.hexToRgba(baseColor, 0.7) : 
+                                         baseColor;
+                dataset.borderColor = baseColor;
+              } 
+              else if (config.type === 'line') {
+                dataset.backgroundColor = AmicaCharts.utils.hexToRgba ? 
+                                         AmicaCharts.utils.hexToRgba(baseColor, 0.1) : 
+                                         baseColor;
+                dataset.borderColor = baseColor;
+              }
+              else if (config.type === 'radar') {
+                dataset.backgroundColor = AmicaCharts.utils.hexToRgba ? 
+                                         AmicaCharts.utils.hexToRgba(baseColor, 0.2) : 
+                                         baseColor;
+                dataset.borderColor = baseColor;
+              }
+            });
+          }
           
           chartCanvas._chart = new Chart(chartCanvas, config);
         } else if (typeof ChartUtils !== 'undefined') {
