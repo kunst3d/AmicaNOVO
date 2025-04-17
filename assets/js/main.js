@@ -396,7 +396,7 @@ const AMICA = {
         }
 
         // Criar configuração de gráfico
-        const config = {
+        let config = {
           type: chartType,
           data: {
             labels: chartConfigData.labels,
