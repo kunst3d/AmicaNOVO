@@ -5,7 +5,7 @@
 
 // Funções utilitárias para gráficos
 const ChartUtils = {
-    // Paleta de cores robusta: tenta CSS vars, mas tem fallback hardcoded
+    // Paleta de cores: Prioriza CSS, fallback elegante
     getColorPalette: function() {
         const style = getComputedStyle(document.documentElement);
         const cssPalette = [
@@ -17,70 +17,73 @@ const ChartUtils = {
             style.getPropertyValue('--color-chart-6')?.trim(),
             style.getPropertyValue('--color-chart-7')?.trim(),
             style.getPropertyValue('--color-chart-8')?.trim()
-        ].filter(color => color); // Filtra valores vazios
+        ].filter(color => color); 
 
-        // Se conseguiu ler do CSS e tem cores válidas, usa elas
-        if (cssPalette.length > 0) {
+        if (cssPalette.length >= 6) { // Exige pelo menos 6 cores do CSS
             console.log("Usando paleta de cores do CSS.");
             return cssPalette;
         }
         
-        // Fallback para paleta hardcoded se CSS falhar
-        console.warn("Falha ao ler paleta do CSS, usando fallback hardcoded.");
+        console.warn("Paleta CSS incompleta ou inválida, usando fallback.");
+        // Paleta fallback mais sóbria e elegante
         return [
-            '#f8f26a', '#2A4B45', '#A67C52', '#6B8E8A', 
-            '#D9C2A7', '#E8B478', '#e0d938', '#3D6A61'
+            '#2A4B45', // Verde Escuro
+            '#A67C52', // Marrom Médio
+            '#6B8E8A', // Verde Acinzentado
+            '#D9C2A7', // Bege Claro
+            '#E8B478', // Laranja Claro (usar com moderação)
+            '#8B653E', // Marrom Dourado Escuro
+            '#3D6A61', // Verde Secundário Claro
+            '#C19A76'  // Marrom Primário Claro
         ];
     },
 
-    // Função para aplicar a paleta a um dataset
+    // Aplicar paleta com mais refinamento
     applyPalette: function(datasets, chartType) {
         const palette = this.getColorPalette();
         datasets.forEach((dataset, index) => {
             const colorIndex = index % palette.length;
             const mainColor = palette[colorIndex];
             
-            // Aplicar cor da borda (se não definida)
-            if (!dataset.borderColor) {
-                dataset.borderColor = mainColor;
-            }
-            
-            // Aplicar cor de fundo (se não definida)
+            // Cores
+            dataset.borderColor = dataset.borderColor || mainColor;
             if (dataset.backgroundColor === undefined) {
-                if (['line', 'bar', 'radar'].includes(chartType)) {
-                    // Tentar usar a var RGB para transparência, senão converter HEX
-                    const rgbVar = `--color-chart-${colorIndex + 1}-rgb`;
-                    const style = getComputedStyle(document.documentElement);
-                    const rgbValue = style.getPropertyValue(rgbVar)?.trim();
-                    dataset.backgroundColor = rgbValue ? `rgba(${rgbValue}, 0.5)` : this.hexToRgba(mainColor, 0.5); // Aumentei um pouco alpha
+                if (['line', 'radar'].includes(chartType)) {
+                    // Linha/Radar: Apenas borda colorida, fundo transparente ou leve gradiente
+                    dataset.backgroundColor = this.hexToRgba(mainColor, 0.15); // Muito sutil
+                    dataset.fill = true;
+                } else if (chartType === 'bar') {
+                    dataset.backgroundColor = this.hexToRgba(mainColor, 0.75); // Barras mais sólidas
                 } else if (['pie', 'doughnut'].includes(chartType)) {
-                    // Pie/Doughnut: aplicar paleta a cada fatia
                     dataset.backgroundColor = dataset.data.map((_, dataIndex) => palette[dataIndex % palette.length]);
+                    dataset.hoverOffset = dataset.hoverOffset ?? 8;
                 } else {
-                    dataset.backgroundColor = mainColor; // Cor sólida para outros tipos
+                    dataset.backgroundColor = mainColor;
                 }
             }
             
-            // Estilos adicionais para linhas
+            // Estilos específicos
             if (chartType === 'line') {
-                dataset.tension = dataset.tension ?? 0.3;
-                dataset.fill = dataset.fill ?? true; // Preencher área abaixo da linha
-                dataset.pointBackgroundColor = dataset.pointBackgroundColor ?? mainColor;
-                dataset.pointBorderColor = dataset.pointBorderColor ?? '#fff';
-                dataset.pointHoverRadius = dataset.pointHoverRadius ?? 5;
-                dataset.pointHoverBackgroundColor = dataset.pointHoverBackgroundColor ?? mainColor;
-                dataset.pointHoverBorderColor = dataset.pointHoverBorderColor ?? '#fff';
-                dataset.borderWidth = dataset.borderWidth ?? 2;
+                dataset.tension = dataset.tension ?? 0.4; // Linha um pouco mais suave
+                dataset.borderWidth = dataset.borderWidth ?? 1.5; // Linha mais fina
+                dataset.pointRadius = dataset.pointRadius ?? 2; // Pontos menores
+                dataset.pointHoverRadius = dataset.pointHoverRadius ?? 4;
+                dataset.pointBackgroundColor = dataset.pointBackgroundColor || mainColor;
+                dataset.pointBorderColor = dataset.pointBorderColor || '#fff'; 
             }
-            // Estilos adicionais para barras
             if (chartType === 'bar') {
-                dataset.borderRadius = dataset.borderRadius ?? 4;
-                dataset.borderSkipped = dataset.borderSkipped ?? false;
+                dataset.borderRadius = 0; // Remove cantos arredondados para minimalismo
+                dataset.borderWidth = dataset.borderWidth ?? 0;
+            }
+            if (chartType === 'radar') {
+                dataset.borderWidth = dataset.borderWidth ?? 1.5;
+                dataset.pointRadius = dataset.pointRadius ?? 2;
+                dataset.pointHoverRadius = dataset.pointHoverRadius ?? 4;
             }
         });
     },
     
-    // Converte HEX para RGBA
+    // hexToRgba (sem alterações)
     hexToRgba: function(hex, alpha) {
         let r = 0, g = 0, b = 0;
         if (hex.length == 4) {
@@ -95,82 +98,86 @@ const ChartUtils = {
         return `rgba(${r},${g},${b},${alpha})`;
     },
 
-    // Opções padrão para todos os gráficos - Refinadas para estética
+    // Opções padrão - Foco em Minimalismo e Elegância
     getDefaultOptions: function() {
         const style = getComputedStyle(document.documentElement);
-        const gridColor = style.getPropertyValue('--color-chart-grid')?.trim() || 'rgba(0, 0, 0, 0.08)';
-        const textColor = style.getPropertyValue('--color-chart-text')?.trim() || '#525252';
+        const gridColor = style.getPropertyValue('--color-chart-grid')?.trim() || 'rgba(0, 0, 0, 0.05)'; // Grid ainda mais sutil
+        const textColor = style.getPropertyValue('--color-chart-text')?.trim() || '#666'; // Cinza um pouco mais claro
         const fontFamily = style.getPropertyValue('--font-family-secondary')?.trim() || 'Inter, sans-serif';
         const titleFontFamily = style.getPropertyValue('--font-family-primary')?.trim() || 'Cormorant Garamond, serif';
 
         return {
             responsive: true,
-            maintainAspectRatio: false, // Permite usar a altura do CSS
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'bottom',
+                    align: 'center', // Alinha itens da legenda
                     labels: {
                         color: textColor,
-                        font: { family: fontFamily, size: 12 },
-                        boxWidth: 12,
-                        padding: 25, // Mais espaço
-                        usePointStyle: true, // Usa bolinhas em vez de caixas
+                        font: { family: fontFamily, size: 11 }, // Fonte menor
+                        boxWidth: 10, // Caixa menor
+                        boxHeight: 10, // Caixa quadrada
+                        padding: 20,
+                        usePointStyle: true,
                         pointStyle: 'circle'
                     }
                 },
                 tooltip: {
                     enabled: true,
-                    backgroundColor: 'rgba(0, 0, 0, 0.85)', // Fundo mais escuro
-                    titleFont: { family: titleFontFamily, size: 14 }, // Fonte primária no título
-                    bodyFont: { family: fontFamily, size: 12 },
-                    padding: 12, // Mais padding
-                    cornerRadius: 3, // Menos arredondado
-                    displayColors: false, // Remove caixinhas de cor no tooltip
-                    boxPadding: 5, // Espaço interno
-                    titleAlign: 'center',
-                    bodyAlign: 'center'
+                    backgroundColor: '#fff', // Fundo branco
+                    borderColor: '#eee', // Borda clara
+                    borderWidth: 1,
+                    titleFont: { family: titleFontFamily, size: 13, weight: 'bold' },
+                    titleColor: '#333', // Cor do título
+                    bodyFont: { family: fontFamily, size: 11 },
+                    bodyColor: '#555', // Cor do corpo
+                    padding: 10,
+                    cornerRadius: 2, // Menos arredondado ainda
+                    displayColors: false,
+                    boxPadding: 4,
+                    // Callbacks para customizar (opcional)
+                    // callbacks: { label: function(context) { return context.formattedValue; } }
                 },
-                title: { // Adiciona suporte a título (se definido nos dados)
-                    display: true,
-                    text: '', // Será preenchido se existir
-                    padding: { top: 10, bottom: 15 },
-                    font: { family: titleFontFamily, size: 16, weight: 'bold' },
+                title: { // Título do gráfico (opcional)
+                    display: false, // Desabilitado por padrão, habilitar se necessário nos dados
+                    text: '',
+                    padding: { top: 5, bottom: 15 },
+                    font: { family: titleFontFamily, size: 16, weight: '600' }, // Semibold
                     color: '#333'
                 }
             },
             scales: {
                 x: {
-                    border: { display: false },
-                    grid: { 
-                        display: false, // Remove grade vertical
-                    },
+                    border: { display: false }, // Sem linha do eixo
+                    grid: { display: false }, // Sem grade vertical
                     ticks: {
                         color: textColor,
-                        font: { family: fontFamily, size: 11 }
+                        font: { family: fontFamily, size: 10 }, // Ticks menores
+                        padding: 8
                     }
                 },
                 y: {
-                    border: { display: false }, // Remove linha do eixo Y
+                    border: { display: false }, // Sem linha do eixo
                     grid: {
-                        color: gridColor, // Cor sutil para grade horizontal
+                        color: gridColor, // Grade horizontal MUITO sutil
                         drawBorder: false,
-                        // Desenha linhas pontilhadas (opcional, descomente se gostar)
-                        // borderDash: [3, 3],
+                        drawTicks: false, // Remove pequenos ticks no eixo
+                        // borderDash: [2, 3], // Linha tracejada se preferir
                     },
                     ticks: {
                         color: textColor,
-                        font: { family: fontFamily, size: 11 },
-                        padding: 15 // Mais espaço
+                        font: { family: fontFamily, size: 10 }, // Ticks menores
+                        padding: 10
                     }
                 }
             },
             animation: {
-              duration: 600, // Animação um pouco mais longa
-              easing: 'easeOutCubic'
+              duration: 0 // Remove animação para visual mais estático/minimalista
             },
             layout: {
               padding: {
-                top: 10, right: 15, bottom: 5, left: 10 // Ajusta padding geral
+                top: 5, right: 5, bottom: 0, left: 0 // Menos padding interno
               }
             }
         };
