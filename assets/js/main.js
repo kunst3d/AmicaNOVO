@@ -3,6 +3,157 @@
  * Carregamento dinâmico com tratamento de codificação
  */
 
+// Funções utilitárias para gráficos
+const ChartUtils = {
+    // Paleta de cores baseada nas variáveis CSS
+    // Usaremos getComputedStyle para pegar os valores reais das variáveis
+    getColorPalette: function() {
+        const style = getComputedStyle(document.documentElement);
+        return [
+            style.getPropertyValue('--color-chart-1').trim() || '#f8f26a', 
+            style.getPropertyValue('--color-chart-2').trim() || '#2A4B45',
+            style.getPropertyValue('--color-chart-3').trim() || '#A67C52',
+            style.getPropertyValue('--color-chart-4').trim() || '#6B8E8A',
+            style.getPropertyValue('--color-chart-5').trim() || '#D9C2A7',
+            style.getPropertyValue('--color-chart-6').trim() || '#E8B478',
+            style.getPropertyValue('--color-chart-7').trim() || '#e0d938',
+            style.getPropertyValue('--color-chart-8').trim() || '#3D6A61'
+            // Adicione mais cores se sua paleta CSS tiver mais
+        ];
+    },
+
+    // Função para aplicar a paleta a um dataset
+    applyPalette: function(datasets, chartType) {
+        const palette = this.getColorPalette();
+        datasets.forEach((dataset, index) => {
+            const colorIndex = index % palette.length;
+            const mainColor = palette[colorIndex];
+            
+            // Aplicar cor principal
+            if (!dataset.borderColor) {
+                dataset.borderColor = mainColor;
+            }
+            if (!dataset.backgroundColor) {
+                // Para gráficos de área/barra/radar, usar uma versão com transparência
+                // Para pizza/doughnut, usar cores sólidas
+                if (['line', 'bar', 'radar'].includes(chartType)) {
+                    // Tenta usar a variável RGB se existir para transparência
+                    const rgbVar = `--color-chart-${colorIndex + 1}-rgb`; // Assume --color-chart-N-rgb
+                    const rgbValue = getComputedStyle(document.documentElement).getPropertyValue(rgbVar)?.trim();
+                    dataset.backgroundColor = rgbValue ? `rgba(${rgbValue}, 0.2)` : this.hexToRgba(mainColor, 0.2);
+                } else if (['pie', 'doughnut'].includes(chartType)) {
+                    // Pie/Doughnut aplicam cores aos dados, não ao dataset
+                    if (!dataset.backgroundColor || !Array.isArray(dataset.backgroundColor)) {
+                        dataset.backgroundColor = dataset.data.map((_, dataIndex) => palette[dataIndex % palette.length]);
+                    }
+                } else {
+                    dataset.backgroundColor = mainColor;
+                }
+            }
+            
+            // Estilos adicionais
+            if (chartType === 'line') {
+                dataset.tension = dataset.tension ?? 0.3;
+                dataset.fill = dataset.fill ?? true;
+                dataset.pointBackgroundColor = dataset.pointBackgroundColor ?? mainColor;
+                dataset.pointBorderColor = dataset.pointBorderColor ?? '#fff';
+                dataset.pointHoverBackgroundColor = dataset.pointHoverBackgroundColor ?? '#fff';
+                dataset.pointHoverBorderColor = dataset.pointHoverBorderColor ?? mainColor;
+            }
+            if (chartType === 'bar') {
+                dataset.borderRadius = dataset.borderRadius ?? 4;
+                dataset.borderSkipped = dataset.borderSkipped ?? false;
+            }
+        });
+    },
+    
+    // Converte HEX para RGBA
+    hexToRgba: function(hex, alpha) {
+        let r = 0, g = 0, b = 0;
+        if (hex.length == 4) {
+            r = parseInt(hex[1] + hex[1], 16);
+            g = parseInt(hex[2] + hex[2], 16);
+            b = parseInt(hex[3] + hex[3], 16);
+        } else if (hex.length == 7) {
+            r = parseInt(hex[1] + hex[2], 16);
+            g = parseInt(hex[3] + hex[4], 16);
+            b = parseInt(hex[5] + hex[6], 16);
+        }
+        return `rgba(${r},${g},${b},${alpha})`;
+    },
+
+    // Opções padrão para todos os gráficos
+    getDefaultOptions: function() {
+        const style = getComputedStyle(document.documentElement);
+        const gridColor = style.getPropertyValue('--color-chart-grid').trim() || 'rgba(0, 0, 0, 0.08)';
+        const textColor = style.getPropertyValue('--color-chart-text').trim() || '#525252';
+        const fontFamily = style.getPropertyValue('--font-family-secondary').trim() || 'Inter, sans-serif';
+
+        return {
+            responsive: true,
+            maintainAspectRatio: false, // Chave para usar a altura do container
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: textColor,
+                        font: {
+                            family: fontFamily,
+                            size: 12
+                        },
+                        boxWidth: 12,
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleFont: { family: fontFamily, weight: 'bold', size: 14 },
+                    bodyFont: { family: fontFamily, size: 12 },
+                    padding: 10,
+                    cornerRadius: 4,
+                    displayColors: true,
+                    boxPadding: 4
+                }
+            },
+            scales: {
+                x: {
+                    border: {
+                      display: false // Remove borda do eixo X
+                    },
+                    grid: {
+                        display: false, // Esconde linhas de grade verticais
+                    },
+                    ticks: {
+                        color: textColor,
+                        font: { family: fontFamily, size: 11 }
+                    }
+                },
+                y: {
+                    border: {
+                      display: false // Remove borda do eixo Y
+                    },
+                    grid: {
+                        color: gridColor, // Cor das linhas de grade horizontais
+                        drawBorder: false, // Remove a linha do eixo Y em si
+                    },
+                    ticks: {
+                        color: textColor,
+                        font: { family: fontFamily, size: 11 },
+                        padding: 10
+                    }
+                }
+            },
+            animation: {
+              duration: 400 // Animação sutil
+            },
+            layout: {
+              padding: 10 // Padding interno do gráfico
+            }
+        };
+    }
+};
+
 const AMICA = {
   // Configurações da aplicação
   config: {
@@ -269,28 +420,63 @@ const AMICA = {
       console.log(`[${sectionElement.id}] Inicializando gráfico ${chartId} (${chartType})`);
       
       try {
-        const chartData = JSON.parse(dataElement.textContent.trim());
+        let chartConfigData;
+        try {
+          chartConfigData = JSON.parse(dataElement.textContent.trim());
+        } catch (parseError) {
+          console.error(`[${sectionElement.id}] Erro ao fazer parse dos dados do gráfico ${chartId}:`, parseError, dataElement.textContent);
+          return;
+        }
+
+        // Aplicar paleta de cores aos datasets
+        if (chartConfigData.datasets) {
+            ChartUtils.applyPalette(chartConfigData.datasets, chartType);
+        }
         
+        // Mesclar opções padrão com opções específicas do gráfico (se houver)
+        // NOTA: Opções específicas no HTML sobrescreverão as padrão.
+        const chartOptions = {
+          ...ChartUtils.getDefaultOptions(), // Começa com as opções padrão
+          ...(chartConfigData.options || {}) // Mescla/sobrescreve com opções do HTML
+        };
+        
+        // Ajustar opções de escala para tipos específicos (ex: radar)
+        if (chartType === 'radar') {
+            chartOptions.scales = {
+                r: {
+                    angleLines: { color: 'rgba(0, 0, 0, 0.08)' },
+                    grid: { color: 'rgba(0, 0, 0, 0.08)' },
+                    pointLabels: { 
+                        font: { family: ChartUtils.getDefaultOptions().plugins.legend.labels.font.family, size: 11 },
+                        color: ChartUtils.getDefaultOptions().plugins.legend.labels.color
+                    },
+                    ticks: { 
+                        backdropColor: 'transparent',
+                        color: ChartUtils.getDefaultOptions().plugins.legend.labels.color,
+                        font: { size: 10 }
+                    }
+                }
+            }
+        } else if (chartType === 'pie' || chartType === 'doughnut') {
+            // Remove escalas para gráficos de pizza/rosca
+            delete chartOptions.scales;
+        }
+
         if (chartCanvas._chart) {
           chartCanvas._chart.destroy(); // Destroi gráfico anterior se existir
         }
         
         chartCanvas._chart = new Chart(chartCanvas, {
           type: chartType,
-          data: chartData,
-          options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                }
-            }
-          }
+          data: { // Passa labels e datasets separadamente
+              labels: chartConfigData.labels,
+              datasets: chartConfigData.datasets
+          },
+          options: chartOptions // Passa as opções mescladas
         });
         console.log(`[${sectionElement.id}] Gráfico ${chartId} inicializado com sucesso`);
       } catch (error) {
-        console.error(`[${sectionElement.id}] Erro ao inicializar gráfico #${chartId}:`, error, dataElement.textContent);
+        console.error(`[${sectionElement.id}] Erro ao inicializar gráfico #${chartId}:`, error);
       }
     });
   },
@@ -325,5 +511,12 @@ const AMICA = {
 
 // Inicializar quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', function() {
+  // Definir algumas configurações globais do Chart.js (opcional, mas bom para consistência)
+  if (typeof Chart !== 'undefined') {
+    Chart.defaults.font.family = getComputedStyle(document.documentElement).getPropertyValue('--font-family-secondary').trim() || 'Inter, sans-serif';
+    Chart.defaults.color = getComputedStyle(document.documentElement).getPropertyValue('--color-chart-text').trim() || '#525252';
+    Chart.defaults.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-chart-grid').trim() || 'rgba(0, 0, 0, 0.08)';
+  }
+
   AMICA.init();
 });

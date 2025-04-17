@@ -10,15 +10,25 @@
 /* ---- Variáveis ---- */
 :root {
   /* Cores */
-  --color-primary: #f8f26a;      /* Marrom dourado (Amica) */
-  --color-primary-light: #C19A76;
-  --color-primary-dark: #8B653E;
+  --color-primary: #f8f26a;      /* Dourado Amica */
+  --color-primary-rgb: 248, 242, 106; /* RGB correspondente */
+  --color-primary-light: #faf7a1;
+  --color-primary-dark: #e0d938;
   
   --color-secondary: #2A4B45;    /* Verde escuro */
+  --color-secondary-rgb: 42, 75, 69; /* RGB correspondente */
   --color-secondary-light: #3D6A61;
   --color-secondary-dark: #1D332F;
   
   --color-tertiary: #D9C2A7;     /* Bege claro */
+  --color-tertiary-rgb: 217, 194, 167; /* RGB correspondente */
+
+  --color-accent1: #A67C52; /* Marrom médio */
+  --color-accent1-rgb: 166, 124, 82;
+  --color-accent2: #6B8E8A; /* Verde acinzentado */
+  --color-accent2-rgb: 107, 142, 138;
+  --color-accent3: #E8B478; /* Laranja claro */
+  --color-accent3-rgb: 232, 180, 120;
   
   --color-black: #000000;
   --color-dark-gray: #353535;
@@ -27,11 +37,26 @@
   --color-light-gray: #d8d8d0;
   --color-off-white: #efefe7;
   --color-white: #FFFFFF;
+
+  /* Cores para gráficos (paleta) */
+  --color-chart-1: var(--color-primary);
+  --color-chart-2: var(--color-secondary);
+  --color-chart-3: var(--color-accent1);
+  --color-chart-4: var(--color-accent2);
+  --color-chart-5: var(--color-tertiary);
+  --color-chart-6: var(--color-accent3);
+  --color-chart-7: var(--color-primary-dark);
+  --color-chart-8: var(--color-secondary-light);
+  /* Adicione mais conforme necessário */
   
   --color-success: #2E7D32;
   --color-warning: #F9A825;
   --color-danger: #C62828;
   --color-info: #0277BD;
+  
+  /* Cores de Grid/Texto para Gráficos */
+  --color-chart-grid: rgba(0, 0, 0, 0.08);
+  --color-chart-text: var(--color-gray);
   
   /* Espaçamento */
   --space-xs: 0.25rem;  /* 4px */

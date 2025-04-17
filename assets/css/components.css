@@ -283,31 +283,49 @@
 }
 
 /* ---- Gráficos ---- */
-.chart-container {
-  position: relative;
-  height: 300px;
+.chart-card {
+  margin-bottom: var(--space-xl);
+}
+
+.chart-card__header {
   margin-bottom: var(--space-l);
 }
 
-.chart-legend {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-s);
+.chart-card__title {
+  font-size: var(--font-size-l);
+  color: var(--color-dark-gray);
+}
+
+.chart-card__subtitle {
+  font-size: var(--font-size-s);
+  color: var(--color-gray);
+  margin-top: var(--space-xs);
+}
+
+.chart-card__body {
+  position: relative; /* Necessário para o canvas */
+  height: 350px; /* Altura padrão para gráficos */
+  width: 100%;
+}
+
+/* Ajuste a altura para telas menores se necessário */
+@media (max-width: 768px) {
+  .chart-card__body {
+    height: 300px;
+  }
+}
+
+.chart-card__footer {
   margin-top: var(--space-m);
   font-size: var(--font-size-xs);
+  color: var(--color-gray);
+  text-align: center;
 }
 
-.chart-legend__item {
-  display: flex;
-  align-items: center;
-}
-
-.chart-legend__color {
-  width: 12px;
-  height: 12px;
-  margin-right: var(--space-xs);
-  border-radius: 2px;
+.chart-legend {
+  /* A legenda padrão do Chart.js pode ser usada, 
+     mas pode ser customizada aqui se necessário */
+  margin-top: var(--space-m);
 }
 
 /* ---- Citações ---- */
